@@ -1,20 +1,114 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <!-- Basic page setup -->
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Quote Builder</title>
+  <head>
+    <!-- Basic page setup -->
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Quote Builder</title>
 
-  <!-- Bootstrap 5 CSS -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet">
-  <!-- FontAwesome for icons -->
-  <script src="https://kit.fontawesome.com/YOUR_KIT_ID.js" crossorigin="anonymous"></script>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <!-- FontAwesome for icons -->
+    <script src="https://kit.fontawesome.com/YOUR_KIT_ID.js" crossorigin="anonymous"></script>
+  </head>
+  <body>
+    <!-- Start Quote Builder -->
+    <div class="row justify-content-between align-items-center">
+      <div
+        class="col-12 col-md-6 d-flex flex-column flex-md-row align-items-center justify-content-center justify-content-md-start mb-3 mb-md-0">
+        <!-- Radio Button Group -->
+        <div class="btn-group" role="group" aria-label="Quote Mode">
+          <input type="radio" class="btn-check" name="quoteMode" id="quoteBuilder" autocomplete="off" checked />
+          <label class="btn btn-outline-primary" for="quoteBuilder">Builder</label>
 
-</head>
-<body>
-  <!-- Start Quote Builder -->
-  
-  <!-- End Quote Builder -->
-</body>
+          <input type="radio" class="btn-check" name="quoteMode" id="settings" autocomplete="off" />
+          <label class="btn btn-outline-primary" for="settings">Settings</label>
+        </div>
+      </div>
+    </div>
+
+    <div id="quoteBuilderContainer">
+      <div class="container my-5">
+        <h1 class="text-center">Quote Builder</h1>
+        
+        <div class="align-items-center">
+          <div class="btn-group" role="group" aria-label="Quote Actions">
+            <button class="btn btn-primary" id="generateQuoteBtn">Generate Quotes</button>
+            <button class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#editQuoteModal">Edit Quote</button>
+            <button class="btn btn-outline-danger" id="clearQuoteBtn">Clear Quotes</button>
+          </div>
+        </div>
+
+
+        <!-- Shipping, Shop Supplies and Current Bill Section -->
+          <!-- Toolbar Section: Current Bill, Shop Supplies, & Shipping Details -->
+          <!-- Line Item Section -->
+          <!-- Add New Line Section -->
+          <!-- Edit Existing Quote Modal -->
+        
+        <!-- Parts and Labor Line Items Section -->
+        
+        <!-- Subtotals and Total Section -->
+        <!-- Generated Quotes Section -->
+        <!-- Generated Quotes -->
+
+        <!-- Toolbox Section -->
+      <!-- Import Jquery -->
+      <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+      <!-- Setup Script -->
+
+      <!-- Preset Values and Initial Setup -->
+
+      <!-- Script to update the labor rate dynmically -->
+
+      <!-- Global Function Definitions -->
+
+      <!-- Quote Parsing -->
+
+      <!-- Field Validation -->
+
+      <!-- JS: Update the Service Time based on the dollar input and selected hourly labor rate -->
+
+      <!-- Price Calculation -->
+
+      <!-- Utility Functions -->
+
+      <!-- Add/Remove Line Items -->
+
+      <!-- Warning Styles -->
+
+      <!-- Calculate Totals -->
+
+      <!--  Generate Quotes Script  -->
+
+      </div>
+            </div>
+
+
+    <div id="settingsContainer" style="display: none">
+      <div class="container my-5">
+        <h1 class="text-center">Settings</h1>
+
+      </div>
+    </div>
+  </body>
+
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+  <!-- Add this script to handle the toggle between Plain Text and Link Builder modes -->
+  <script>
+    $(document).ready(function () {
+      $('input[name="quoteMode"]').on("change", function () {
+        if ($("#quoteBuilder").is(":checked")) {
+          $("#quoteBuilderContainer").show();
+          $("#settingsContainer").hide();
+        } else if ($("#settings").is(":checked")) {
+          $("#quoteBuilderContainer").hide();
+          $("#settingsContainer").show();
+        }
+      });
+    });
+  </script>
 </html>
+<!-- End Quote Builder -->
