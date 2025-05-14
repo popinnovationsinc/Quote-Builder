@@ -9,9 +9,10 @@
 
     <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet" />
-    <!-- FontAwesome for icons -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <!-- Fontawesome for icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css" rel="stylesheet" />
+    <!-- Bootstrap for icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
   </head>
   <body>
     <div class="row justify-content-between align-items-center">
@@ -21,7 +22,6 @@
         <div class="btn-group" role="group" aria-label="Quote Mode">
           <input type="radio" class="btn-check" name="quoteMode" id="quoteBuilder" autocomplete="off" checked />
           <label class="btn btn-outline-primary" for="quoteBuilder">Builder</label>
-
           <input type="radio" class="btn-check" name="quoteMode" id="settings" autocomplete="off" />
           <label class="btn btn-outline-primary" for="settings">Settings</label>
         </div>
@@ -41,81 +41,85 @@
             <button class="btn btn-outline-danger" id="clearQuoteBtn">Clear Quotes</button>
           </div>
         </div>
-        
-        <hr>
+
+        <hr />
 
         <!-- Shipping, Shop Supplies and Current Bill Section -->
-        <h2>Shipping, Shop Supplies  &amp; Currrent Bill Details</h2>
-        
-        <small>Use this section to communicate the current bill, as well as shipping, and apply a shop supplies fee.</small>
-        
+        <h2>Shipping, Shop Supplies &amp; Currrent Bill Details</h2>
+
+        <small
+          >Use this section to communicate the current bill, as well as shipping, and apply a shop supplies fee.</small
+        >
+
         <!-- Toolbar Section: Current Bill, Shop Supplies, & Shipping Details -->
         <div class="toolbar bg-light py-3 mb-3">
-            <div class="container-fluid">
-                <div class="row align-items-center">
-                    <!-- Current Bill Input -->
-                    <div class="col-md-4">
-                        <!-- Label and input group for current bill amount -->
-                        <label for="currentBill" class="form-label mb-0">Current Bill:</label>
-                        <div class="input-group">
-                            <!-- Currency symbol -->
-                            <span class="input-group-text bg-success text-white">
-                                <strong>{{ $currencySymbol }}</strong>
-                            </span>
-                            <!-- Number input for current bill -->
-                            <input type="number" class="form-control" id="currentBill" inputmode="numeric">
-                        </div>
-                        <small class="text-muted">(Optional) Enter the current bill amount.</small>
-                    </div>
-
-                    <!-- Current Bill Notes Input -->
-                    <div class="col-md-4">
-                        <!-- Label and input group for current bill notes -->
-                        <label for="currentBillNotes" class="form-label mb-0">Current Bill Notes:</label>
-                        <div class="input-group">
-                            <!-- Icon for the notes field -->
-                            <span class="input-group-text bg-success text-white">
-                                <i class="fas fa-quote-right"></i>
-                            </span>
-                            <!-- Text input for bill description -->
-                            <input type="text" class="form-control" id="currentBillNotes">
-                        </div>
-                        <small class="text-muted">(Optional) Brief description of completed services.</small>
-                    </div>
-
-                    <!-- Shop Supplies Checkbox -->
-                    <div class="col-md-2">
-                        <!-- Checkbox to include shop supplies charge -->
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" id="includeShopSupplies" checked>
-                            <label class="form-check-label" for="includeShopSupplies">
-                                Charge Shop Supplies Fee: (<span id="shopSuppliesRateLabel"></span>% or {{ $currencySymbol }}<span id="shopSuppliesDollarLabel"></span>) Whichever is greater.
-                            </label>
-                            <!-- Additional info for shop supplies method -->
-                            <div id="shopSuppliesMethodInfo" class="text-muted"></div>
-                        </div>
-                    </div>
-
-                    <!-- Shipping Estimate Input and Checkbox -->
-                    <div class="col-md-2">
-                        <!-- Label and input group for shipping estimate -->
-                        <label for="shippingEstimate" class="form-label mb-0">Shipping:</label>
-                        <div class="input-group">
-                            <span class="input-group-text bg-success text-white">
-                                <strong>{{ $currencySymbol }}</strong>
-                            </span>
-                            <input type="number" class="form-control" id="shippingEstimate" value="0.00" inputmode="numeric">
-                        </div>
-                        <!-- Checkbox to include shipping in the quote -->
-                        <div class="form-check">
-                            <input type="checkbox" class="form-check-input" id="includeShipping">
-                            <label for="includeShipping" class="form-check-label">Include Shipping in Required Quote</label>
-                        </div>
-                    </div>
+          <div class="container-fluid">
+            <div class="row align-items-center">
+              <!-- Current Bill Input -->
+              <div class="col-md-4">
+                <!-- Label and input group for current bill amount -->
+                <label for="currentBill" class="form-label mb-0">Current Bill:</label>
+                <div class="input-group">
+                  <!-- Currency symbol -->
+                  <span class="input-group-text bg-success text-white">
+                    <strong>{{ $currencySymbol }}</strong>
+                  </span>
+                  <!-- Number input for current bill -->
+                  <input type="number" class="form-control" id="currentBill" inputmode="numeric" />
                 </div>
+                <small class="text-muted">(Optional) Enter the current bill amount.</small>
+              </div>
+
+              <!-- Current Bill Notes Input -->
+              <div class="col-md-4">
+                <!-- Label and input group for current bill notes -->
+                <label for="currentBillNotes" class="form-label mb-0">Current Bill Notes:</label>
+                <div class="input-group">
+                  <!-- Icon for the notes field -->
+                  <span class="input-group-text bg-success text-white">
+                    <i class="fas fa-quote-right"></i>
+                  </span>
+                  <!-- Text input for bill description -->
+                  <input type="text" class="form-control" id="currentBillNotes" />
+                </div>
+                <small class="text-muted">(Optional) Brief description of completed services.</small>
+              </div>
+
+              <!-- Shop Supplies Checkbox -->
+              <div class="col-md-2">
+                <!-- Checkbox to include shop supplies charge -->
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" id="includeShopSupplies" checked />
+                  <label class="form-check-label" for="includeShopSupplies">
+                    Charge Shop Supplies Fee: (<span id="shopSuppliesRateLabel"></span>% or {{ $currencySymbol }}<span
+                      id="shopSuppliesDollarLabel"></span
+                    >) Whichever is greater.
+                  </label>
+                  <!-- Additional info for shop supplies method -->
+                  <div id="shopSuppliesMethodInfo" class="text-muted"></div>
+                </div>
+              </div>
+
+              <!-- Shipping Estimate Input and Checkbox -->
+              <div class="col-md-2">
+                <!-- Label and input group for shipping estimate -->
+                <label for="shippingEstimate" class="form-label mb-0">Shipping:</label>
+                <div class="input-group">
+                  <span class="input-group-text bg-success text-white">
+                    <strong>{{ $currencySymbol }}</strong>
+                  </span>
+                  <input type="number" class="form-control" id="shippingEstimate" value="0.00" inputmode="numeric" />
+                </div>
+                <!-- Checkbox to include shipping in the quote -->
+                <div class="form-check">
+                  <input type="checkbox" class="form-check-input" id="includeShipping" />
+                  <label for="includeShipping" class="form-check-label">Include Shipping in Required Quote</label>
+                </div>
+              </div>
             </div>
+          </div>
         </div>
-        
+
         <!-- Toolbar Section: Current Bill, Shop Supplies, & Shipping Details -->
         <!-- Line Item Section -->
         <!-- Add New Line Section -->
@@ -158,10 +162,82 @@
         <!--  Generate Quotes Script  -->
       </div>
     </div>
-
     <div id="settingsContainer" style="display: none">
       <div class="container my-5">
         <h1 class="text-center">Settings</h1>
+        <!-- Nav tabs -->
+        <ul class="nav nav-tabs" id="presetTabs" role="tablist">
+          <li class="nav-item" role="presentation">
+            <button
+              class="nav-link active"
+              id="general-presets-tab"
+              data-bs-toggle="tab"
+              data-bs-target="#general-presets"
+              type="button"
+              role="tab"
+              aria-controls="general-presets"
+              aria-selected="true">
+              General Presets
+            </button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button
+              class="nav-link"
+              id="price-models-tab"
+              data-bs-toggle="tab"
+              data-bs-target="#price-models"
+              type="button"
+              role="tab"
+              aria-controls="price-models"
+              aria-selected="false">
+              Price Models
+            </button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button
+              class="nav-link"
+              id="hourly-labor-rates-tab"
+              data-bs-toggle="tab"
+              data-bs-target="#hourly-labor-rates"
+              type="button"
+              role="tab"
+              aria-controls="hourly-labor-rates"
+              aria-selected="false">
+              Hourly Labor Rates
+            </button>
+          </li>
+        </ul>
+
+        <!-- Tab panes -->
+        <div class="tab-content pt-3" id="presetTabsContent">
+          <!-- GENERAL PRESETS -->
+          <div
+            class="tab-pane fade show active"
+            id="general-presets"
+            role="tabpanel"
+            aria-labelledby="general-presets-tab">
+            <table class="table table-striped">
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Value</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody id="generalPresetsTbody">
+                <!-- JS will inject <tr> here -->
+              </tbody>
+            </table>
+          </div>
+
+          <!-- STUBS for other tabs -->
+          <div class="tab-pane fade" id="price-models" role="tabpanel" aria-labelledby="price-models-tab">
+            <!-- ... -->
+          </div>
+          <div class="tab-pane fade" id="hourly-labor-rates" role="tabpanel" aria-labelledby="hourly-labor-rates-tab">
+            <!-- ... -->
+          </div>
+        </div>
       </div>
     </div>
   </body>
@@ -180,6 +256,118 @@
           $("#settingsContainer").show();
         }
       });
+    });
+  </script>
+
+  <!-- Bootstrap & dependencies -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    // --------------------------------------------------------------------
+    // INITIAL SETUP: Load (or initialize) your currencySymbol + presets
+    // --------------------------------------------------------------------
+    const DEFAULT_SYMBOL = "$";
+    // Try to read from localStorage, or fall back to default
+    let currencySymbol = localStorage.getItem("currencySymbol") || DEFAULT_SYMBOL;
+    // Example general presets; in real use you'd seed this separately
+    let generalPresets = JSON.parse(localStorage.getItem("generalPresets")) || [
+      { name: "sales_tax_rate", value: "8.25" },
+      { name: "shop_supplies_charge", value: JSON.stringify({ percent: "5.00", dollar_amount: "2.00" }) },
+      { name: "shipping_charge", value: "15.00" },
+      {
+        name: "contact_information",
+        value: JSON.stringify({
+          phone: "555-1234",
+          email: "you@domain.com",
+          include_phone_in_quote: true,
+          include_email_in_quote: false
+        })
+      }
+    ];
+
+    // --------------------------------------------------------------------
+    // RENDER the General Presets table
+    // --------------------------------------------------------------------
+    function renderGeneralPresetsTable() {
+      const tbody = document.getElementById("generalPresetsTbody");
+      tbody.innerHTML = ""; // clear
+
+      generalPresets.forEach((preset, idx) => {
+        // Format display of the value
+        let displayValue;
+        if (preset.name === "sales_tax_rate") {
+          displayValue = preset.value + "%";
+        } else if (preset.name === "shop_supplies_charge") {
+          const c = JSON.parse(preset.value);
+          displayValue = `Charge ${c.percent}% or ${currencySymbol}${parseFloat(c.dollar_amount).toFixed(2)}`;
+        } else if (preset.name === "shipping_charge") {
+          displayValue = `${currencySymbol}${parseFloat(preset.value).toFixed(2)}`;
+        } else if (preset.name === "contact_information") {
+          const c = JSON.parse(preset.value);
+          displayValue =
+            `Phone: ${c.phone} ${c.include_phone_in_quote ? "✅" : "❌"}<br>` +
+            `Email: ${c.email} ${c.include_email_in_quote ? "✅" : "❌"}`;
+        } else {
+          displayValue = preset.value;
+        }
+
+        // Build row
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${preset.name.replace(/_/g, " ").replace(/\b\w/g, (l) => l.toUpperCase())}</td>
+          <td>${displayValue}</td>
+          <td>
+            <button class="btn btn-sm btn-primary edit-general-preset" data-index="${idx}">
+              Edit
+            </button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+
+      // Attach click-handlers for all edit buttons
+      document.querySelectorAll(".edit-general-preset").forEach((btn) => {
+        btn.addEventListener("click", onEditGeneralPreset);
+      });
+    }
+
+    // --------------------------------------------------------------------
+    // HANDLE editing one preset in-place (via prompt for simplicity)
+    // --------------------------------------------------------------------
+    function onEditGeneralPreset(evt) {
+      const idx = +evt.currentTarget.dataset.index;
+      const preset = generalPresets[idx];
+      let newValue;
+
+      if (preset.name === "contact_information") {
+        // for contact info, JSON stringify again
+        const c = JSON.parse(preset.value);
+        const phone = prompt("Phone ###", c.phone) || c.phone;
+        const email = prompt("Email address", c.email) || c.email;
+        const includePhone = confirm("Include phone in quote?");
+        const includeEmail = confirm("Include email in quote?");
+        newValue = JSON.stringify({
+          phone,
+          email,
+          include_phone_in_quote: includePhone,
+          include_email_in_quote: includeEmail
+        });
+      } else {
+        // for everything else, just handle a string
+        newValue = prompt(`New value for ${preset.name}`, preset.value);
+        if (newValue === null) return; // cancel
+      }
+
+      // save & re-render
+      generalPresets[idx].value = newValue;
+      localStorage.setItem("generalPresets", JSON.stringify(generalPresets));
+      renderGeneralPresetsTable();
+    }
+
+    // --------------------------------------------------------------------
+    // BOOTSTRAP the table once DOM is ready
+    // --------------------------------------------------------------------
+    document.addEventListener("DOMContentLoaded", () => {
+      renderGeneralPresetsTable();
     });
   </script>
 </html>
