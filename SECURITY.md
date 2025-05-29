@@ -16,9 +16,9 @@ We actively backport critical security fixes to the following versions:
 
 If you discover a security issue, please:
 
-1. **Email**: sands-81.crampon@icloud.com  
-2. **Subject**: `[Security] <short description>`  
-3. **Body**:  
+1. **Email us at**: sands-81.crampon@icloud.com  
+2. **Include in the subject line**: `[Security] and a short description`  
+3. **In the body if the email, include the following**:  
    - A clear description of the issue.  
    - Steps to reproduce, and any proof-of-concept code.  
    - The version(s) you tested against (if applicable).
@@ -30,15 +30,15 @@ If you discover a security issue, please:
   - Critical vulnerabilities: fix in **< 2 days**.  
   - High-severity: fix in **< 5 days**.  
   - Lower-severity: scheduled in next minor release.  
-- **Disclosure**: Once fixed in all supported versions, we’ll publish a coordinated security advisory and credit your report (unless you request anonymity).
+- **Disclosure**: Once fixed in all supported versions, we’ll publish a coordinated security update.
 
 ---
 
 ## Supported Communication Channels
 
+- **Do ot open a public GitHub issue for security reports.**
 - Email is preferred for confidentiality.
 - We respect your privacy - your email address will not be shared with, or disclosed to anyone.
-- **Do ot open a public GitHub issue for security reports.**
 
 ---
 
