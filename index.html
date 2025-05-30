@@ -1,374 +1,2513 @@
-<!-- Start Quote Builder -->
 <!doctype html>
 <html lang="en">
   <head>
-    <!-- Basic page setup -->
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Quote Builder</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Quote Builder & Presets – Local</title>
+    <!-- Import boostrap v5.3 via CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <!-- Import fontawesome v6.5 via CDN -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet" />
+    <style>
+      .input-group-text-copy {
+        cursor: pointer;
+      }
+      .gap-warning {
+        margin-top: 0.5rem;
+      }
 
-    <!-- Bootstrap 5 CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet" />
-    <!-- Fontawesome for icons -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css" rel="stylesheet" />
-    <!-- Bootstrap for icons -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+      /* --- Chat-Bubble Toast --- */
+      .toast.chat-toast {
+        padding: 0; /* kill default toast padding            */
+        border: none; /* no BS border                           */
+        background: transparent;
+      }
+
+      .toast.chat-toast .chat-avatar {
+        width: 48px; /* tweak size as needed                   */
+        height: 48px;
+        border-radius: 50%;
+        flex-shrink: 0;
+        margin-right: 0.5rem;
+        object-fit: cover;
+      }
+
+      .toast.chat-toast .chat-bubble {
+        background: #53a5ff; /* nice blue                              */
+        color: #fff;
+        border-radius: 2rem; /* pill shape                             */
+        padding: 0.5rem 1rem;
+        max-width: 420px; /* prevent super-wide messages            */
+        position: relative;
+        font-family: "Segoe UI", Arial, sans-serif;
+        line-height: 1.35;
+      }
+
+      /* little arrow */
+      .toast.chat-toast .chat-bubble::before {
+        content: "";
+        position: absolute;
+        left: -12px;
+        top: 14px; /* adjust vertically if you resize */
+        border: 12px solid transparent;
+        border-right-color: #53a5ff; /* matches bubble bg               */
+      }
+
+      textarea.form-control.border-0 {
+        border-radius: 0;
+        resize: vertical;
+      }
+    </style>
   </head>
-  <body>
-    <div class="row justify-content-between align-items-center">
-      <div
-        class="col-12 col-md-6 d-flex flex-column flex-md-row align-items-center justify-content-center justify-content-md-start mb-3 mb-md-0">
-        <!-- Radio Button Group -->
-        <div class="btn-group" role="group" aria-label="Quote Mode">
-          <input type="radio" class="btn-check" name="quoteMode" id="quoteBuilder" autocomplete="off" checked />
-          <label class="btn btn-outline-primary" for="quoteBuilder">Builder</label>
-          <input type="radio" class="btn-check" name="quoteMode" id="settings" autocomplete="off" />
-          <label class="btn btn-outline-primary" for="settings">Settings</label>
-        </div>
-      </div>
-    </div>
-
-    <div id="quoteBuilderContainer">
-      <div class="container my-5">
-        <h1 class="text-center">Quote Builder</h1>
-
-        <div class="align-items-center">
-          <div class="btn-group" role="group" aria-label="Quote Actions">
-            <button class="btn btn-primary" id="generateQuoteBtn">Generate Quotes</button>
-            <button class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#editQuoteModal">
-              Edit Quote
-            </button>
-            <button class="btn btn-outline-danger" id="clearQuoteBtn">Clear Quotes</button>
+  <body class="bg-light">
+    <!-- Container -->
+    <div class="container py-4">
+      <!-- Navigation -->
+      <ul class="nav nav-tabs" id="mainTabs" role="tablist">
+        <!-- Quote builder navigation tab -->
+        <li class="nav-item">
+          <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#builder" type="button">
+            Quote Builder
+          </button>
+        </li>
+        <!-- Presets  navigation tab -->
+        <li class="nav-item">
+          <button class="nav-link" data-bs-toggle="tab" data-bs-target="#presets" type="button">Manage Presets</button>
+        </li>
+        <!-- About the app navigation tab -->
+        <li class="nav-item">
+          <button class="nav-link" data-bs-toggle="tab" data-bs-target="#updates" type="button">About The App</button>
+        </li>
+      </ul>
+      <div class="tab-content bg-white p-3 border-bottom border-start border-end">
+        <!-- Quote builder pane-->
+        <div class="tab-pane fade show active" id="builder" role="tabpanel">
+          <!-- Sub-header -->
+          <div class="row justify-content-between align-items-center mb-4">
+            <div class="col-md-6 d-flex flex-column flex-md-row align-items-center">
+              <h3 class="mb-2 mb-md-0 me-md-3">Quote Builder</h3>
+              <div class="btn-group" role="group">
+                <input class="btn-check" type="radio" name="quoteMode" id="plainTextQuotes" checked />
+              </div>
+            </div>
           </div>
-        </div>
-
-        <hr />
-
-        <!-- Shipping, Shop Supplies and Current Bill Section -->
-        <h2>Shipping, Shop Supplies &amp; Currrent Bill Details</h2>
-
-        <small
-          >Use this section to communicate the current bill, as well as shipping, and apply a shop supplies fee.</small
-        >
-
-        <!-- Toolbar Section: Current Bill, Shop Supplies, & Shipping Details -->
-        <div class="toolbar bg-light py-3 mb-3">
-          <div class="container-fluid">
-            <div class="row align-items-center">
-              <!-- Current Bill Input -->
-              <div class="col-md-4">
-                <!-- Label and input group for current bill amount -->
-                <label for="currentBill" class="form-label mb-0">Current Bill:</label>
-                <div class="input-group">
-                  <!-- Currency symbol -->
-                  <span class="input-group-text bg-success text-white">
-                    <strong>{{ $currencySymbol }}</strong>
-                  </span>
-                  <!-- Number input for current bill -->
-                  <input type="number" class="form-control" id="currentBill" inputmode="numeric" />
+          <!-- Shipping, shop supplies, $&amp; current bill -->
+          <h3 class="text-center mb-3">Shipping, Shop&nbsp;Supplies&nbsp;&amp;&nbsp;Current&nbsp;Bill&nbsp;Details</h3>
+          <p class="text-center text-muted small mb-3">
+            Use this section to add optional fees, and incidate if there's any current bill charges, if applicable.
+          </p>
+          <div class="card bg-light shadow-sm mb-4">
+            <div class="card-body">
+              <div class="row g-2">
+                <!-- Current bill -->
+                <div class="col-md-4">
+                  <label class="form-label" for="currentBill">Current Bill</label>
+                  <div class="input-group">
+                    <span class="input-group-text bg-success text-white">
+                      <strong class="currency-symbol"></strong>
+                    </span>
+                    <input class="form-control" type="number" id="currentBill" inputmode="numeric" />
+                  </div>
+                  <small class="text-muted">Optional - amount already billed.</small>
                 </div>
-                <small class="text-muted">(Optional) Enter the current bill amount.</small>
-              </div>
-
-              <!-- Current Bill Notes Input -->
-              <div class="col-md-4">
-                <!-- Label and input group for current bill notes -->
-                <label for="currentBillNotes" class="form-label mb-0">Current Bill Notes:</label>
-                <div class="input-group">
-                  <!-- Icon for the notes field -->
-                  <span class="input-group-text bg-success text-white">
-                    <i class="fas fa-quote-right"></i>
-                  </span>
-                  <!-- Text input for bill description -->
-                  <input type="text" class="form-control" id="currentBillNotes" />
+                <!-- Current bill notes -->
+                <div class="col-md-4">
+                  <label class="form-label" for="currentBillNotes">Current Bill Notes</label>
+                  <div class="input-group">
+                    <span class="input-group-text bg-success text-white">
+                      <i class="fas fa-quote-right"></i>
+                    </span>
+                    <input class="form-control" type="text" id="currentBillNotes" />
+                  </div>
+                  <small class="text-muted">Optional - description of completed services.</small>
                 </div>
-                <small class="text-muted">(Optional) Brief description of completed services.</small>
+                <!-- Shop supplies -->
+                <div class="col-md-2">
+                  <div class="form-check form-switch mt-4">
+                    <input class="form-check-input" type="checkbox" id="includeShopSupplies" checked />
+                    <label class="form-check-label" for="includeShopSupplies">
+                      Charge&nbsp;Shop&nbsp;Supplies (<span id="shopSuppliesRateLabel"></span>% or
+                      <span class="currency-symbol"></span><span id="shopSuppliesDollarLabel"></span>)
+                    </label>
+                  </div>
+                  <div id="shopSuppliesMethodInfo" class="text-muted small"></div>
+                </div>
+                <!-- Shipping -->
+                <div class="col-md-2">
+                  <label class="form-label" for="shippingEstimate">Shipping</label>
+                  <div class="input-group">
+                    <span class="input-group-text bg-success text-white">
+                      <strong class="currency-symbol"></strong>
+                    </span>
+                    <input class="form-control" type="number" id="shippingEstimate" value="0.00" inputmode="numeric" />
+                  </div>
+                  <div class="form-check form-switch mt-2">
+                    <input class="form-check-input" type="checkbox" id="includeShipping" />
+                    <label class="form-check-label small" for="includeShipping"> Add to Required Quote </label>
+                  </div>
+                </div>
               </div>
-
-              <!-- Shop Supplies Checkbox -->
-              <div class="col-md-2">
-                <!-- Checkbox to include shop supplies charge -->
-                <div class="form-check">
-                  <input class="form-check-input" type="checkbox" id="includeShopSupplies" checked />
-                  <label class="form-check-label" for="includeShopSupplies">
-                    Charge Shop Supplies Fee: (<span id="shopSuppliesRateLabel"></span>% or {{ $currencySymbol }}<span
-                      id="shopSuppliesDollarLabel"></span
-                    >) Whichever is greater.
+            </div>
+          </div>
+          <!-- Add line items -->
+          <hr />
+          <h3 class="text-center m-3">Add Line Items</h3>
+          <p class="text-center text-muted small mb-3">It's pretty self-explanatory...</p>
+          <div class="card bg-light shadow-sm mb-4">
+            <div class="card-body">
+              <div class="row justify-content-center g-3">
+                <div class="col-md-6">
+                  <label class="form-label" for="addNewLineQty">
+                    How many <strong>total</strong> lines do you need?
                   </label>
-                  <!-- Additional info for shop supplies method -->
-                  <div id="shopSuppliesMethodInfo" class="text-muted"></div>
+                  <div class="input-group input-group-lg">
+                    <input
+                      class="form-control"
+                      type="number"
+                      id="addNewLineQty"
+                      placeholder="e.g. 5"
+                      inputmode="numeric" />
+                    <button class="btn btn-primary d-flex align-items-center gap-1" type="button" id="addNewLineBtn">
+                      <i class="fas fa-plus-circle"></i> Create
+                    </button>
+                  </div>
+                  <small id="addNewLineMessage" class="text-muted"></small>
                 </div>
               </div>
-
-              <!-- Shipping Estimate Input and Checkbox -->
-              <div class="col-md-2">
-                <!-- Label and input group for shipping estimate -->
-                <label for="shippingEstimate" class="form-label mb-0">Shipping:</label>
-                <div class="input-group">
-                  <span class="input-group-text bg-success text-white">
-                    <strong>{{ $currencySymbol }}</strong>
-                  </span>
-                  <input type="number" class="form-control" id="shippingEstimate" value="0.00" inputmode="numeric" />
+            </div>
+          </div>
+          <!-- Placeholder and dynamic lines -->
+          <div id="plSection" class="mb-4">
+            <div class="col-md-8 col-lg-6 mx-auto">
+              <div id="placeholder" class="alert alert-warning text-center shadow" role="alert">Nothing to show.</div>
+            </div>
+          </div>
+          <!-- Subtotals -->
+          <hr />
+          <h3 class="text-center m-3">Summary</h3>
+          <p class="text-center text-muted small mb-3">Auto-generated calculations - parts, labor, tax, etc.</p>
+          <div class="card shadow-sm border-0 mb-4">
+            <div class="card-header bg-dark text-white text-center"><h5 class="mb-0">Subtotals</h5></div>
+            <div class="card-body bg-light p-4">
+              <div class="row mb-3 gy-3">
+                <div class="col-md-4">
+                  <label class="form-label" for="partsSubtotal">Parts Subtotal:</label>
+                  <div class="input-group">
+                    <span class="input-group-text bg-secondary text-white input-group-text-copy"
+                      ><strong class="currency-symbol"></strong
+                    ></span>
+                    <input class="form-control" type="text" id="partsSubtotal" disabled />
+                  </div>
                 </div>
-                <!-- Checkbox to include shipping in the quote -->
-                <div class="form-check">
-                  <input type="checkbox" class="form-check-input" id="includeShipping" />
-                  <label for="includeShipping" class="form-check-label">Include Shipping in Required Quote</label>
+                <div class="col-md-4">
+                  <label class="form-label" for="laborSubtotal">Labor Subtotal:</label>
+                  <div class="input-group">
+                    <span class="input-group-text bg-secondary text-white input-group-text-copy"
+                      ><strong class="currency-symbol"></strong
+                    ></span>
+                    <input class="form-control" type="text" id="laborSubtotal" disabled />
+                  </div>
+                </div>
+                <div class="col-md-4">
+                  <label class="form-label" for="taxSubtotal">Tax Subtotal:</label>
+                  <div class="input-group">
+                    <span class="input-group-text bg-secondary text-white input-group-text-copy"
+                      ><strong class="currency-symbol"></strong
+                    ></span>
+                    <input class="form-control" type="text" id="taxSubtotal" disabled />
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-4">
+                  <label class="form-label" for="totalEstimate">Total (ESTIMATE):</label>
+                  <div class="input-group">
+                    <span class="input-group-text bg-secondary text-white input-group-text-copy"
+                      ><strong class="currency-symbol"></strong
+                    ></span>
+                    <input class="form-control" type="text" id="totalEstimate" disabled />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- Quote actions -->
+          <div class="text-center my-3">
+            <div class="btn-toolbar w-100 flex-wrap justify-content-center gap-3" role="toolbar">
+              <button class="btn btn-primary btn-lg px-4 py-3 d-flex align-items-center gap-2" id="generateQuoteBtn">
+                <i class="fas fa-magic fa-lg"></i>
+                <span>Generate Quotes</span>
+              </button>
+              <button class="btn btn-warning btn-lg px-4 py-3 d-flex align-items-center gap-2" id="clearQuoteBtn">
+                <i class="fas fa-repeat fa-lg"></i>
+                <span>Start New Quote</span>
+              </button>
+            </div>
+          </div>
+          <!-- Generated quotes -->
+          <hr />
+          <h3 class="text-center m-3">Generated Quotes</h3>
+          <p class="text-center text-muted small mb-3">
+            This is where your quotes will appear - use the copy button to grab the quote.
+          </p>
+          <div class="row g-3">
+            <div class="col-md-6">
+              <div class="card h-100">
+                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                  <h5 class="mb-0">Recommended Quote</h5>
+                  <span class="input-group-text input-group-text-copy" id="copyRecommendedQuote"
+                    ><i class="fas fa-copy"></i>&nbsp;Copy</span
+                  >
+                </div>
+                <div class="card-body">
+                  <textarea class="form-control" rows="8" id="recommendedQuote" disabled></textarea>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="card h-100">
+                <div class="card-header bg-warning text-dark d-flex justify-content-between align-items-center">
+                  <h5 class="mb-0">Required Quote</h5>
+                  <span class="input-group-text input-group-text-copy" id="copyRequiredQuote"
+                    ><i class="fas fa-copy"></i>&nbsp;Copy</span
+                  >
+                </div>
+                <div class="card-body">
+                  <textarea class="form-control" rows="8" id="requiredQuote" disabled></textarea>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- Toolbox Section -->
+          <hr />
+          <h3 class="text-center m-3">Useful Tools</h3>
+          <p class="text-center text-muted small mb-3">Just a few useful tools, and labor rate selection.</p>
+          <div class="card mb-4 border-0 shadow-sm">
+            <div class="card-header bg-dark text-white text-center">
+              <h2 class="h4">Toolbox</h2>
+            </div>
+            <div class="card-body bg-light p-4">
+              <div class="row">
+                <!-- Labor Charge Conversion Section -->
+                <div class="col-12 col-md-4 mb-4">
+                  <div class="bg-white p-3 rounded shadow-sm h-100">
+                    <h3 class="text-dark mb-3">Labor Charge Conversion</h3>
+                    <div id="laborChargeControls">
+                      <!-- Input Section: Enter the Dollar Amount to be charged -->
+                      <div class="mb-3">
+                        <label for="laborChargeInput" class="form-label">Enter Dollar Amount:</label>
+                        <div class="input-group">
+                          <!-- Currency symbol displayed before the input field -->
+                          <span class="input-group-text bg-success text-white"
+                            ><strong class="currency-symbol"></strong
+                          ></span>
+                          <!-- Input field for entering the dollar amount -->
+                          <input
+                            type="number"
+                            class="form-control"
+                            id="laborChargeInput"
+                            placeholder="e.g., 20.00"
+                            inputmode="numeric" />
+                        </div>
+                        <small class="text-muted">Enter the dollar amount you wish to charge for the service.</small>
+                      </div>
+                    </div>
+                    <!-- Output Section: Display the calculated equivalent service time -->
+                    <div class="mb-3">
+                      <label for="serviceTimeOutput" class="form-label">Equivalent Service Time (hours):</label>
+                      <div class="input-group">
+                        <span class="input-group-text bg-secondary text-white">
+                          <i class="fas fa-clock"></i>
+                        </span>
+                        <input type="text" step="0.0001" class="form-control" id="serviceTimeOutput" disabled />
+                        <span class="input-group-text bg-primary text-light input-group-text-copy" id="copyServiceTime">
+                          <i class="fas fa-copy"></i>&nbsp;Copy
+                        </span>
+                      </div>
+                      <small class="text-muted" id="serviceTimeFormula">
+                        Calculated as: (Dollar Amount) / (Selected Hourly Labor Rate)
+                      </small>
+                    </div>
+                  </div>
+                </div>
+                <!-- Magic Box Section -->
+                <div class="col-12 col-md-4 mb-4">
+                  <div class="bg-white p-3 rounded shadow-sm h-100">
+                    <h3 class="text-dark mb-3 text-center">
+                      <i class="fas fa-hat-wizard text-primary"></i> The Magic Box
+                    </h3>
+                    <!-- Controls wrapper -->
+                    <div id="magicBoxControls">
+                      <!-- Radios -->
+                      <div class="mb-3">
+                        <div id="magicBoxRadios"></div>
+                      </div>
+                      <!-- Cost input -->
+                      <div class="mb-3">
+                        <label for="costInput" class="form-label">Part Cost:</label>
+                        <div class="input-group">
+                          <!-- Currency symbol -->
+                          <span class="input-group-text bg-success text-white">
+                            <strong class="currency-symbol"></strong
+                            ><!-- Populated on load -->
+                          </span>
+                          <input
+                            type="number"
+                            class="form-control"
+                            id="costInput"
+                            placeholder="Enter cost"
+                            inputmode="numeric" />
+                          <div id="costInputSuccess" class="valid-feedback">Looks good!</div>
+                        </div>
+                        <div id="costInputError" class="invalid-feedback"></div>
+                      </div>
+                      <!-- Price output -->
+                      <div class="mb-3">
+                        <label for="retailPriceOutput" class="form-label">
+                          Retail Price: <span id="priceModelLabel"></span>
+                        </label>
+                        <div class="input-group">
+                          <span class="input-group-text bg-secondary text-white">
+                            <strong class="currency-symbol"></strong>
+                          </span>
+                          <input type="text" class="form-control" id="retailPriceOutput" disabled />
+                          <span
+                            class="input-group-text bg-primary text-light input-group-text-copy"
+                            id="copyMagicBoxRetailPrice">
+                            <i class="fas fa-copy"></i>&nbsp;Copy
+                          </span>
+                        </div>
+                        <small class="text-muted fst-italic"> Price auto-generated through arcane calculations </small>
+                      </div>
+                    </div>
+                    <!-- Placeholder for overlay -->
+                    <div id="magicBoxEmpty"></div>
+                  </div>
+                </div>
+                <!-- Hourly Labor Rate Section -->
+                <div class="col-12 col-md-4 mb-4">
+                  <div class="bg-white p-3 rounded shadow-sm h-100">
+                    <h3 class="text-dark mb-3">Hourly Labor Rate</h3>
+                    <!-- Everything goes inside this one box -->
+                    <div id="laborRateBox">
+                      <div id="laborRateRadios"></div>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
+        <!-- Presets pane -->
+        <div class="tab-pane fade" id="presets" role="tabpanel">
+          <h1 class="h3 mb-3">Manage Presets</h1>
+          <button
+            class="btn btn-warning d-flex align-items-center gap-2 mb-3"
+            data-bs-toggle="modal"
+            data-bs-target="#backupInfoModal">
+            <i class="fas fa-shield-alt"></i>
+            It’s important you back-up your settings! Click to learn more.
+          </button>
+          <ul class="nav nav-tabs" id="presetTabs" role="tablist">
+            <li class="nav-item">
+              <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#general-presets" type="button">
+                General
+              </button>
+            </li>
+            <li class="nav-item">
+              <button class="nav-link" data-bs-toggle="tab" data-bs-target="#price-models" type="button">
+                Price Models
+              </button>
+            </li>
+            <li class="nav-item">
+              <button class="nav-link" data-bs-toggle="tab" data-bs-target="#hourly-labor-rates" type="button">
+                Hourly Labor Rates
+              </button>
+            </li>
+          </ul>
+          <div class="tab-content pt-3">
+            <!-- General -->
+            <div class="tab-pane fade show active" id="general-presets">
+              <!-- Import and export options -->
+              <div class="d-flex justify-content-end mb-3">
+                <button class="btn btn-secondary me-2" id="exportPresetsBtn">
+                  <i class="fas fa-download"></i> Export General Presets
+                </button>
+                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#pasteImportModal">
+                  <i class="fas fa-upload"></i> Import Presets
+                </button>
+              </div>
+              <table class="table align-middle">
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Value</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody id="preset-table-body"></tbody>
+              </table>
+            </div>
+            <!-- Price Models -->
+            <div class="tab-pane fade" id="price-models">
+              <!--  Create / duplicate price model button -->
+              <div class="d-flex justify-content-end mb-3">
+                <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#createPriceModelModal">
+                  Create New Price Model
+                </button>
+                <!-- Import price model button -->
+                <button class="btn btn-primary ms-2" data-bs-toggle="modal" data-bs-target="#importPriceModelModal">
+                  <i class="fas fa-upload me-1"></i>Import Price Model
+                </button>
+              </div>
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Details</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody id="price-model-table"></tbody>
+              </table>
+            </div>
+            <!-- Hourly Rates -->
+            <div class="tab-pane fade" id="hourly-labor-rates">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Rate</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody id="labor-rate-table"></tbody>
+              </table>
+              <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#createHourlyLaborRateModal">
+                Create New Hourly Labor Rate
+              </button>
+            </div>
+          </div>
+        </div>
+        <!--  About Pane -->
+        <div class="tab-pane fade" id="updates" role="tabpanel">
+          <!-- Hero / Tip-Jar Banner -->
+          <header class="bg-primary bg-gradient text-white rounded-3 p-4 p-md-5 mb-5 shadow-sm">
+            <div class="container-lg text-center">
+              <h1 class="display-6 fw-bold mb-3">Thanks&nbsp;for&nbsp;using&nbsp;Quote&nbsp;Builder!</h1>
+              <p class="lead">
+                If the tool saves you time or makes you money, feed my insatiable
+                <span class="fw-semibold">taco&nbsp;habit&nbsp;🌮</span> to say “nice work, Josh!”
+              </p>
+              <!-- Buy-Me-a-Coffee -->
+              <script
+                src="https://cdnjs.buymeacoffee.com/1.0.0/button.prod.min.js"
+                data-name="bmc-button"
+                data-slug="imjoshbrown"
+                data-color="#ffffff"
+                data-emoji="🌮"
+                data-font="Poppins"
+                data-text="Fund my taco habit"
+                data-outline-color="#ffffff"
+                data-font-color="#1E2B4F"
+                data-coffee-color="#FFDD00"></script>
+            </div>
+          </header>
 
-        <!-- Toolbar Section: Current Bill, Shop Supplies, & Shipping Details -->
-        <!-- Line Item Section -->
-        <!-- Add New Line Section -->
-        <!-- Edit Existing Quote Modal -->
+          <!-- Collaboration Call-out -->
+          <section id="collab" class="container-lg mb-5">
+            <div class="card shadow-sm border-0">
+              <div class="card-body text-center py-5">
+                <h2 class="fw-bold mb-3">
+                  <i class="fas fa-laptop-code text-primary me-2"></i>
+                  Looking for more / want to collaborate? Sweet!
+                </h2>
+                <p class="lead mb-4">
+                  I’m a <strong>full-stack web-application developer</strong> and I develop most apps using the TALL
+                  stack (Tailwind CSS, Alpine.js, Laravel, and Livewire). So, if you have a great idea, or if you’d like
+                  to evolve the Quote Builder into a cloud-hosted app – complete with user accounts, team sharing,
+                  invoicing, or anything else – just reach out. I can turn this browser-only app into a production-ready
+                  system tailored to your workflow.
+                </p>
+                <div class="d-flex flex-column flex-sm-row justify-content-center gap-3">
+                  <!-- Email -->
+                  <a
+                    href="mailto:sands-81.crampon@icloud.com"
+                    class="btn btn-primary d-inline-flex align-items-center gap-2 px-4"
+                    target="_blank"
+                    rel="noopener">
+                    <i class="fas fa-envelope"></i> Send me an email
+                  </a>
+                  <!-- Instagram -->
+                  <a
+                    href="https://www.instagram.com/imjoshbrown/"
+                    class="btn btn-dark d-inline-flex align-items-center gap-2 px-4"
+                    target="_blank"
+                    rel="noopener">
+                    <i class="fa-brands fa-instagram"></i> @imjoshbrown
+                  </a>
+                </div>
+              </div>
+            </div>
+          </section>
 
-        <!-- Parts and Labor Line Items Section -->
+          <!-- About the App -->
+          <section class="container-lg mb-5">
+            <div class="row g-4">
+              <!-- App Intro -->
+              <div class="col-12">
+                <div class="card border-0 shadow-sm h-100">
+                  <div class="card-header bg-dark text-white">
+                    <h3 class="mb-0"><i class="fas fa-info-circle me-2"></i> About Quote Builder</h3>
+                  </div>
+                  <div class="card-body">
+                    <p class="mb-0">
+                      <strong>The Quote Builder</strong> is a lightweight, 100 % front-end tool for quickly generating
+                      parts + labor estimates. It’s designed for technicians, service writers, and small shops who want
+                      to easily create text-based repair estimates without the depression &amp; clunkiness that comes
+                      with using spreadsheets.
+                    </p>
+                  </div>
+                </div>
+              </div>
 
-        <!-- Subtotals and Total Section -->
-        <!-- Generated Quotes Section -->
-        <!-- Generated Quotes -->
+              <!-- Split Features / Tech -->
+              <div class="col-md-6">
+                <div class="card border-0 shadow-sm h-100">
+                  <div class="card-header bg-primary bg-opacity-10">
+                    <h4 class="mb-0 text-primary"><i class="fas fa-bolt me-2"></i> Core Features</h4>
+                  </div>
+                  <div class="card-body">
+                    <ul class="mb-0 ps-3">
+                      <li>Dynamic text-based quotes generation (recommended and required estimates).</li>
+                      <li>Unlimited line-item creation with drag-and-drop ordering.</li>
+                      <li>Automated “Magic Box” engine for instant retail price generation.</li>
+                      <li>Auto-calculating tax, shop supplies &amp; shipping.</li>
+                      <li>Unlimited hourly labor rates.</li>
+                      <li>Convenient labor-charge conversion engine.</li>
+                      <li>One-click copy for quotes and individual values.</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
 
-        <!-- Toolbox Section -->
-        <!-- Import Jquery -->
-        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+              <div class="col-md-6">
+                <div class="card border-0 shadow-sm h-100">
+                  <div class="card-header bg-secondary bg-opacity-10">
+                    <h4 class="mb-0 text-secondary"><i class="fas fa-code me-2"></i> Tech Stack</h4>
+                  </div>
+                  <div class="card-body">
+                    <ul class="mb-0 ps-3">
+                      <li>Vanilla JS + Bootstrap 5 (no frameworks).</li>
+                      <li><code>localStorage</code> for zero-server persistence.</li>
+                      <li>SortableJS for smooth drag handles.</li>
+                      <li>Font Awesome 6 Icons.</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
 
-        <!-- Setup Script -->
-
-        <!-- Preset Values and Initial Setup -->
-
-        <!-- Script to update the labor rate dynmically -->
-
-        <!-- Global Function Definitions -->
-
-        <!-- Quote Parsing -->
-
-        <!-- Field Validation -->
-
-        <!-- JS: Update the Service Time based on the dollar input and selected hourly labor rate -->
-
-        <!-- Price Calculation -->
-
-        <!-- Utility Functions -->
-
-        <!-- Add/Remove Line Items -->
-
-        <!-- Warning Styles -->
-
-        <!-- Calculate Totals -->
-
-        <!--  Generate Quotes Script  -->
+          <!-- License -->
+          <section class="container-lg">
+            <div class="card border-0 shadow-sm">
+              <div class="card-body">
+                <h5 class="text-uppercase text-muted mb-2">License Info</h5>
+                <p class="mb-0">
+                  Released under the
+                  <a href="https://opensource.org/licenses/MIT" target="_blank" rel="noopener"> MIT License</a>.<br />
+                  • Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
+                  associated documentation files (the “Software”), to deal in the Software without restriction.<br />
+                  • You must include this copyright notice and license text in all copies or substantial portions of the
+                  Software.<br />
+                  • THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED.
+                </p>
+              </div>
+            </div>
+          </section>
+        </div>
       </div>
-    </div>
-    <div id="settingsContainer" style="display: none">
-      <div class="container my-5">
-        <h1 class="text-center">Settings</h1>
-        <!-- Nav tabs -->
-        <ul class="nav nav-tabs" id="presetTabs" role="tablist">
-          <li class="nav-item" role="presentation">
-            <button
-              class="nav-link active"
-              id="general-presets-tab"
-              data-bs-toggle="tab"
-              data-bs-target="#general-presets"
-              type="button"
-              role="tab"
-              aria-controls="general-presets"
-              aria-selected="true">
-              General Presets
-            </button>
-          </li>
-          <li class="nav-item" role="presentation">
-            <button
-              class="nav-link"
-              id="price-models-tab"
-              data-bs-toggle="tab"
-              data-bs-target="#price-models"
-              type="button"
-              role="tab"
-              aria-controls="price-models"
-              aria-selected="false">
-              Price Models
-            </button>
-          </li>
-          <li class="nav-item" role="presentation">
-            <button
-              class="nav-link"
-              id="hourly-labor-rates-tab"
-              data-bs-toggle="tab"
-              data-bs-target="#hourly-labor-rates"
-              type="button"
-              role="tab"
-              aria-controls="hourly-labor-rates"
-              aria-selected="false">
-              Hourly Labor Rates
-            </button>
-          </li>
-        </ul>
 
-        <!-- Tab panes -->
-        <div class="tab-content pt-3" id="presetTabsContent">
-          <!-- GENERAL PRESETS -->
-          <div
-            class="tab-pane fade show active"
-            id="general-presets"
-            role="tabpanel"
-            aria-labelledby="general-presets-tab">
-            <table class="table table-striped">
-              <thead>
-                <tr>
-                  <th>Name</th>
-                  <th>Value</th>
-                  <th>Action</th>
-                </tr>
-              </thead>
-              <tbody id="generalPresetsTbody">
-                <!-- JS will inject <tr> here -->
-              </tbody>
-            </table>
-          </div>
+      <!-- Backup-settings info modal -->
+      <div class="modal fade" id="backupInfoModal" tabindex="-1" aria-labelledby="backupInfoLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-scrollable">
+          <div class="modal-content">
+            <div class="modal-header bg-warning bg-opacity-25">
+              <h5 class="modal-title" id="backupInfoLabel">
+                <i class="fas fa-exclamation-triangle text-warning me-2"></i>
+                Your Settings can be <strong> ERASED on accident!</strong>
+              </h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
 
-          <!-- STUBS for other tabs -->
-          <div class="tab-pane fade" id="price-models" role="tabpanel" aria-labelledby="price-models-tab">
-            <!-- ... -->
-          </div>
-          <div class="tab-pane fade" id="hourly-labor-rates" role="tabpanel" aria-labelledby="hourly-labor-rates-tab">
-            <!-- ... -->
+            <div class="modal-body">
+              <p class="mb-2">
+                Everything you configure - <strong>General&nbsp;Presets</strong>, <strong>Price&nbsp;Models</strong>
+                <em>and</em> <strong>Hourly&nbsp;Labor&nbsp;Rates</strong> - is stored only in this browser’s
+                <code>localStorage</code>. This is intentional, as the app does not rely on a server to run. Clearing
+                cookies / site-data, or downloading a fresh copy of the app from the github repo will remove all your
+                settings. We want you to be able to enjoy future updates, without having to manually re-apply each and
+                every setting, everytime you download a new version.
+                <br />
+              </p>
+
+              <p class="mb-1"><em>Keeping a backup is easy:</em></p>
+              <ul class="mb-3 ps-3">
+                <li>
+                  In <em>General&nbsp;Presets</em> click
+                  <span class="badge bg-secondary">
+                    <i class="fas fa-download me-1"></i>Export&nbsp;General&nbsp;Presets
+                  </span>
+                  to download a <code>.txt</code> file containing plain-text <strong>JSON</strong> document. Restore
+                  these settings by clicking
+                  <span class="badge bg-primary"> <i class="fas fa-upload me-1"></i>Import&nbsp;Presets </span> and
+                  pasting the file's contents in the provided window.
+                </li>
+
+                <li>
+                  Similarily, in the <em>Price&nbsp;Models</em> tab, each row has a button labeled
+                  <span class="badge bg-secondary">
+                    <i class="fas fa-download me-1"></i>Export&nbsp;Price&nbsp;Model </span
+                  >. Restore a price model to the app by clicking
+                  <span class="badge bg-primary"> <i class="fas fa-upload me-1"></i>Import&nbsp;Price&nbsp;Model </span>
+                  and pasting the file's contents in the provided window.
+                </li>
+
+                <li>
+                  <em>Hourly&nbsp;Labor&nbsp;Rates</em> aren’t covered by the export buttons. If they’re lost you’ll
+                  need to recreate them via
+                  <span class="badge bg-success">
+                    Manage&nbsp;Presets&nbsp;&rarr;&nbsp;Hourly&nbsp;Labor&nbsp;Rates&nbsp;&rarr;&nbsp;Create&nbsp;New&nbsp;Hourly&nbsp;Labor&nbsp;Rate </span
+                  >.
+                </li>
+              </ul>
+
+              <p class="mb-0">
+                Store these downloaded files somewhere safe and accessible, and you’ll always be only a few copy-paste
+                commands away from restoring your settings.
+              </p>
+            </div>
+
+            <div class="modal-footer">
+              <button class="btn btn-primary" data-bs-dismiss="modal">
+                <i class="fas fa-thumbs-up me-1"></i> Got&nbsp;it
+              </button>
+            </div>
           </div>
         </div>
       </div>
+      <!-- Edit Price Model Modal -->
+      <div class="modal fade" id="editPriceModelModal" tabindex="-1">
+        <div class="modal-dialog modal-xl">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title">Edit Price Model</h5>
+              <button class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+
+            <div class="modal-body">
+              <input type="hidden" id="pm_id" />
+              <div class="mb-3">
+                <label class="form-label" for="pm_name">Price Model Name</label>
+                <input class="form-control" id="pm_name" />
+              </div>
+
+              <!-- RULES TABLE -->
+              <div id="pm_rules"></div>
+              <button class="btn btn-success mb-3" id="pm_add_rule">Add Rule</button>
+            </div>
+
+            <div class="modal-footer">
+              <button class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+              <button class="btn btn-primary" id="pm_save">Save changes</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Paste-import general presets modal -->
+      <div class="modal fade" id="pasteImportModal" tabindex="-1">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title">Import General Presets</h5>
+              <button class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+              <p class="small text-muted">
+                Paste the exact JSON you downloaded via the “Export General Presets” button (a `.txt` file containing
+                your presets). Make sure it includes all required keys - if the JSON is modified or missing keys, it
+                will prevent the import from succeeding.
+              </p>
+              <textarea
+                id="pasteImportArea"
+                class="form-control"
+                rows="10"
+                spellcheck="false"
+                placeholder='Your file should look something like: { "sales_tax_rate": "0.00", "labor_tax_rate": "0.00", "shop_supplies_charge": {"percent": "0.00","dollar_amount": "0.00"}, "shipping_charge": {"value": "0.00"},"contact_information": {"phone": "123-456-7890","email": "email@emailaddress.com","include_phone_in_quote": false, "include_email_in_quote": false}}'></textarea>
+              <div id="pasteImportError" class="text-danger small mt-2 d-none"></div>
+            </div>
+            <div class="modal-footer">
+              <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+              <button class="btn btn-primary" id="pasteImportSave">Import</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!--  Create / Duplicate Price-Model Modal  -->
+      <div class="modal fade" id="createPriceModelModal" tabindex="-1">
+        <div class="modal-dialog modal-xl">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="cpm_title">Create New Price Model</h5>
+              <button class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+
+            <div class="modal-body">
+              <input type="hidden" id="cpm_mode" value="new" /><!-- new | dup  -->
+              <input type="hidden" id="cpm_dup_id" /><!-- id to copy when duplicating -->
+
+              <div class="mb-3">
+                <label class="form-label" for="cpm_name">Price-model name</label>
+                <input class="form-control" id="cpm_name" required />
+              </div>
+
+              <!-- Wrap the rules & error summary in one container -->
+              <div id="create_price_model_container">
+                <!-- our script will inject the summary banner just above this -->
+                <div id="cpm_rules"></div>
+              </div>
+
+              <button class="btn btn-success mb-3" id="cpm_add_rule">Add Rule</button>
+
+              <!-- per-field validation errors (if any) -->
+              <div id="cpm_error" class="alert alert-danger d-none"></div>
+            </div>
+
+            <div class="modal-footer">
+              <button class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+              <button class="btn btn-primary" id="cpm_save">Save changes</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Import Price-Model Modal -->
+      <div class="modal fade" id="importPriceModelModal" tabindex="-1">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title">Import Price Model</h5>
+              <button class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+              <p class="small text-muted">
+                Paste the exact JSON you downloaded via the “Export Price Model” button (a `.txt` file containing the
+                price model). Make sure it includes all required keys - if the JSON is modified or missing keys, it will
+                prevent the import from succeeding.
+              </p>
+              <textarea
+                id="pm_import_json"
+                class="form-control"
+                rows="8"
+                placeholder='Your file should look something like { "name": "My Model","rules": [{"min": 0,"max": 10,"markup": 30, "base_fee": 0, "markup_type": "percentage" }, { "min": 10.01, "max": 99999, "markup": 20, "base_fee": 0, "markup_type": "percentage" } ] }'></textarea>
+              <div id="pm_import_error" class="alert alert-danger d-none mt-2"></div>
+            </div>
+            <div class="modal-footer">
+              <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+              <button class="btn btn-primary" id="pm_import_btn">Import</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Edit Preset Modal -->
+      <div class="modal fade" id="editPresetModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="ep_title">Edit Preset</h5>
+              <button class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+
+            <div class="modal-body">
+              <input type="hidden" id="ep_key" /><!-- preset “name” / key -->
+              <div id="ep_fields"></div>
+              <div class="alert alert-danger d-none" id="ep_error"></div>
+            </div>
+
+            <div class="modal-footer">
+              <button class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+              <button class="btn btn-primary" id="ep_save">Save changes</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Create Hourly-Rate Modal -->
+      <div class="modal fade" id="createHourlyLaborRateModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title">Create New Hourly Labor Rate</h5>
+              <button class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+
+            <div class="modal-body">
+              <div class="mb-3">
+                <label class="form-label" for="chr_name">Rate name</label>
+                <input class="form-control" id="chr_name" required />
+              </div>
+              <div class="mb-3">
+                <label class="form-label" for="chr_value">Rate ( <span class="currency-symbol"></span> )</label>
+                <input type="number" step="0.01" class="form-control" id="chr_value" required />
+              </div>
+              <div class="alert alert-danger d-none" id="chr_error"></div>
+            </div>
+
+            <div class="modal-footer">
+              <button class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+              <button class="btn btn-primary" id="chr_save">Save changes</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Edit Hourly Labor Rate Modal -->
+      <div class="modal fade" id="editHourlyRateModal" tabindex="-1" aria-labelledby="ehrLabel" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="ehrLabel">Edit Hourly Labor Rate</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <input type="hidden" id="ehr_id" />
+              <div class="mb-3">
+                <label for="ehr_name" class="form-label">Rate Name</label>
+                <input type="text" id="ehr_name" class="form-control" />
+              </div>
+              <div class="mb-3">
+                <label for="ehr_value" class="form-label">Rate (<span class="currency-symbol"></span>)</label>
+                <input type="number" step="0.01" id="ehr_value" class="form-control" />
+              </div>
+              <div id="ehr_error" class="alert alert-danger d-none"></div>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+              <button type="button" id="ehr_save" class="btn btn-primary">Save Changes</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Toast container -->
+      <div class="toast-container position-fixed bottom-0 start-0 p-3" style="z-index: 9999">
+        <div id="toastContainer"></div>
+      </div>
     </div>
-  </body>
+    <!--  CDN Scripts -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
 
-  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
-  <!-- Add this script to handle the toggle between Plain Text and Link Builder modes -->
-  <script>
-    $(document).ready(function () {
-      $('input[name="quoteMode"]').on("change", function () {
-        if ($("#quoteBuilder").is(":checked")) {
-          $("#quoteBuilderContainer").show();
-          $("#settingsContainer").hide();
-        } else if ($("#settings").is(":checked")) {
-          $("#quoteBuilderContainer").hide();
-          $("#settingsContainer").show();
-        }
-      });
-    });
-  </script>
-
-  <!-- Bootstrap & dependencies -->
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"></script>
-  <script>
-    // --------------------------------------------------------------------
-    // INITIAL SETUP: Load (or initialize) your currencySymbol + presets
-    // --------------------------------------------------------------------
-    const DEFAULT_SYMBOL = "$";
-    // Try to read from localStorage, or fall back to default
-    let currencySymbol = localStorage.getItem("currencySymbol") || DEFAULT_SYMBOL;
-    // Example general presets; in real use you'd seed this separately
-    let generalPresets = JSON.parse(localStorage.getItem("generalPresets")) || [
-      { name: "sales_tax_rate", value: "8.25" },
-      { name: "shop_supplies_charge", value: JSON.stringify({ percent: "5.00", dollar_amount: "2.00" }) },
-      { name: "shipping_charge", value: "15.00" },
-      {
-        name: "contact_information",
-        value: JSON.stringify({
-          phone: "555-1234",
-          email: "you@domain.com",
-          include_phone_in_quote: true,
-          include_email_in_quote: false
-        })
+    <!-- Toast logic -->
+    <script>
+      /* -------------------------------------------------------
+       *  escapeHTML  – tiny helper to prevent HTML injection
+       * ----------------------------------------------------- */
+      function escapeHTML(str) {
+        return str.replace(
+          /[&<>"'`=\/]/g,
+          (s) =>
+            ({
+              "&": "&amp;",
+              "<": "&lt;",
+              ">": "&gt;",
+              '"': "&quot;",
+              "'": "&#39;",
+              "/": "&#x2F;",
+              "`": "&#x60;",
+              "=": "&#x3D;"
+            })[s]
+        );
       }
-    ];
 
-    // --------------------------------------------------------------------
-    // RENDER the General Presets table
-    // --------------------------------------------------------------------
-    function renderGeneralPresetsTable() {
-      const tbody = document.getElementById("generalPresetsTbody");
-      tbody.innerHTML = ""; // clear
+      /* -------------------------------------------------------
+       *  showToast(message, type = "success", delay = 4000)
+       *  type →  Bootstrap 5 “text-bg-*” utilities
+       * ----------------------------------------------------- */
+      function showToast(message, type = "success") {
+        const AVATAR_SRC = "assets/img/cams-face.png";
+        const toastEl = document.createElement("div");
 
-      generalPresets.forEach((preset, idx) => {
-        // Format display of the value
-        let displayValue;
-        if (preset.name === "sales_tax_rate") {
-          displayValue = preset.value + "%";
-        } else if (preset.name === "shop_supplies_charge") {
-          const c = JSON.parse(preset.value);
-          displayValue = `Charge ${c.percent}% or ${currencySymbol}${parseFloat(c.dollar_amount).toFixed(2)}`;
-        } else if (preset.name === "shipping_charge") {
-          displayValue = `${currencySymbol}${parseFloat(preset.value).toFixed(2)}`;
-        } else if (preset.name === "contact_information") {
-          const c = JSON.parse(preset.value);
-          displayValue =
-            `Phone: ${c.phone} ${c.include_phone_in_quote ? "✅" : "❌"}<br>` +
-            `Email: ${c.email} ${c.include_email_in_quote ? "✅" : "❌"}`;
-        } else {
-          displayValue = preset.value;
-        }
-
-        // Build row
-        const tr = document.createElement("tr");
-        tr.innerHTML = `
-          <td>${preset.name.replace(/_/g, " ").replace(/\b\w/g, (l) => l.toUpperCase())}</td>
-          <td>${displayValue}</td>
-          <td>
-            <button class="btn btn-sm btn-primary edit-general-preset" data-index="${idx}">
-              Edit
-            </button>
-          </td>
-        `;
-        tbody.appendChild(tr);
-      });
-
-      // Attach click-handlers for all edit buttons
-      document.querySelectorAll(".edit-general-preset").forEach((btn) => {
-        btn.addEventListener("click", onEditGeneralPreset);
-      });
-    }
-
-    // --------------------------------------------------------------------
-    // HANDLE editing one preset in-place (via prompt for simplicity)
-    // --------------------------------------------------------------------
-    function onEditGeneralPreset(evt) {
-      const idx = +evt.currentTarget.dataset.index;
-      const preset = generalPresets[idx];
-      let newValue;
-
-      if (preset.name === "contact_information") {
-        // for contact info, JSON stringify again
-        const c = JSON.parse(preset.value);
-        const phone = prompt("Phone ###", c.phone) || c.phone;
-        const email = prompt("Email address", c.email) || c.email;
-        const includePhone = confirm("Include phone in quote?");
-        const includeEmail = confirm("Include email in quote?");
-        newValue = JSON.stringify({
-          phone,
-          email,
-          include_phone_in_quote: includePhone,
-          include_email_in_quote: includeEmail
+        // Format the time
+        const now = new Date();
+        const timeStamp = now.toLocaleString([], {
+          year: "numeric",
+          month: "short",
+          day: "2-digit",
+          hour: "2-digit",
+          minute: "2-digit"
         });
-      } else {
-        // for everything else, just handle a string
-        newValue = prompt(`New value for ${preset.name}`, preset.value);
-        if (newValue === null) return; // cancel
+
+        toastEl.className = `toast text-bg-${type}`;
+        toastEl.role = "alert";
+        toastEl.ariaLive = "assertive";
+        toastEl.ariaAtomic = "true";
+        toastEl.style.marginBottom = ".5rem";
+
+        toastEl.innerHTML = `
+          <div class="toast-header">
+            <strong class="me-auto">Notification</strong>
+            <small class="text-body-secondary">${timeStamp}</small>
+            <button class="btn-close" data-bs-dismiss="toast"></button>
+          </div>
+          <div class="toast-body d-flex align-items-center">
+            <img src="${AVATAR_SRC}"
+                 class="rounded me-2"
+                 style="width:2.5rem;height:2.5rem;object-fit:cover">
+            <span>${message}</span>
+          </div>`;
+
+        document.getElementById("toastContainer").appendChild(toastEl);
+        new bootstrap.Toast(toastEl).show();
+        toastEl.addEventListener("hidden.bs.toast", () => toastEl.remove());
+      }
+    </script>
+    <!-- Core App JS /Local Data Store (localStorage)  -->
+    <script>
+      const STORE_KEY = "qb_data_v1";
+      // Default settings
+      const defaultSeed = {
+        currencySymbol: "$",
+        presets: {
+          sales_tax_rate: "8.25",
+          labor_tax_rate: "0.00",
+          shop_supplies_charge: { percent: "2.00", dollar_amount: "4.00" },
+          shipping_charge: { value: "0.00" },
+          contact_information: {
+            phone: "123-456-7890",
+            email: "email@example.com",
+            include_phone_in_quote: false,
+            include_email_in_quote: false
+          }
+        },
+        priceModels: [
+          {
+            id: 1,
+            name: "Default",
+            rules: [
+              { min: 0, max: 10, markup: 30, base_fee: 0, markup_type: "percentage" },
+              { min: 10.01, max: 99999, markup: 20, base_fee: 0, markup_type: "percentage" }
+            ]
+          }
+        ],
+        hourlyLaborRates: [{ id: 1, name: "Standard", rate: 95.0 }]
+      };
+      function getData() {
+        return JSON.parse(localStorage.getItem(STORE_KEY) || "null") || defaultSeed;
+      }
+      function saveData(d) {
+        localStorage.setItem(STORE_KEY, JSON.stringify(d));
+      }
+      let db = getData();
+    </script>
+    <!-- Globals expected for legacy code -->
+    <script>
+      window.currencySymbol = db.currencySymbol;
+      window.priceModels = db.priceModels;
+      window.hourlyLaborRates = db.hourlyLaborRates;
+      // convert presets object to array-of-objects for legacy loops
+      window.presets = Object.entries(db.presets).map(([name, value]) => ({ name, value }));
+    </script>
+    <!-- UI helpers -->
+    <script>
+      function $(sel) {
+        return document.querySelector(sel);
+      }
+      function $$(sel) {
+        return document.querySelectorAll(sel);
+      }
+      // inject currency symbol
+      $$(".currency-symbol").forEach((el) => (el.textContent = db.currencySymbol));
+    </script>
+    <!-- Render the general presets table -->
+    <script>
+      function formatPresetValue(name, val) {
+        if (name === "sales_tax_rate" || name === "labor_tax_rate") return val + "%";
+        if (name === "shop_supplies_charge")
+          return `${val.percent}% or ${db.currencySymbol}${parseFloat(val.dollar_amount).toFixed(2)}`;
+        if (name === "shipping_charge") return `${db.currencySymbol}${parseFloat(val.value).toFixed(2)}`;
+        if (name === "contact_information") {
+          return `Phone: ${val.phone} ${val.include_phone_in_quote ? '<i class="fas fa-check text-success"></i><small class="text-success"> Included</small>' : '<i class="fas fa-times text-danger"></i><small class="text-danger"> Not included</small>'}<br>Email: ${val.email} ${val.include_email_in_quote ? '<i class="fas fa-check text-success"></i> <small class="text-success"> Included</small>' : '<i class="fas fa-times text-danger"></i><small class="text-danger"> Not included</small>'}`;
+        }
+        return val;
+      }
+      function renderPresetsTable() {
+        const body = $("#preset-table-body");
+        body.innerHTML = "";
+
+        Object.entries(db.presets).forEach(([name, val]) => {
+          const prettyName = name.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
+
+          const tr = document.createElement("tr");
+          tr.innerHTML = `
+            <td>${prettyName}</td>
+            <td>${formatPresetValue(name, val)}</td>
+            <td>
+              <button class="btn btn-primary"
+                data-bs-toggle="modal"
+                data-bs-target="#editPresetModal"
+                data-key="${name}">
+              <i class="fas fa-pen"></i> Edit
+            </button>
+            </td>`;
+          body.appendChild(tr);
+        });
+      }
+    </script>
+
+    <!-- Import/Export General presets Logic -->
+    <script>
+      // EXPORT  – download presets as plain-text .txt file
+      document.getElementById("exportPresetsBtn").addEventListener("click", () => {
+        const txt = JSON.stringify(db.presets, null, 2); // pretty JSON
+        const blob = new Blob([txt], { type: "text/plain" });
+        const url = URL.createObjectURL(blob);
+
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `Quote Builder General Presets - ${new Date().toISOString().slice(0, 10)}.txt`;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        URL.revokeObjectURL(url);
+
+        showToast("General presets file generated. Please allow downloads in your web browser to receive it.", "info");
+      });
+      /* ==== Import General Presets ==== */
+      (() => {
+        const area = document.getElementById("pasteImportArea");
+        const saveBtn = document.getElementById("pasteImportSave");
+        const errBox = document.getElementById("pasteImportError");
+        const modal = document.getElementById("pasteImportModal");
+
+        // helper
+        function showErr(msg) {
+          errBox.textContent = msg;
+          errBox.classList.remove("d-none");
+        }
+
+        saveBtn.addEventListener("click", () => {
+          errBox.classList.add("d-none");
+
+          let obj;
+          try {
+            obj = JSON.parse(area.value.trim());
+          } catch {
+            return showErr("Not valid JSON.");
+          }
+
+          // minimal sanity-check
+          const must = ["sales_tax_rate", "labor_tax_rate", "shop_supplies_charge"];
+          if (!must.every((k) => k in obj)) {
+            return showErr("JSON is missing required preset keys.");
+          }
+
+          db.presets = obj; // overwrite
+          saveData(db); // localStorage
+          renderPresetsTable(); // refresh UI
+
+          bootstrap.Modal.getInstance(modal).hide();
+          area.value = "";
+          showToast("General presets received & saved.", "success");
+        });
+
+        // reset on close
+        modal.addEventListener("hidden.bs.modal", () => {
+          area.value = "";
+          errBox.classList.add("d-none");
+        });
+      })();
+    </script>
+
+    <!-- Render price model & labor rate rules -->
+    <script>
+      function renderPriceModelTable() {
+        const tbody = document.getElementById("price-model-table");
+        tbody.innerHTML = "";
+
+        db.priceModels.forEach((pm) => {
+          const rulesHtml = pm.rules
+            .map(
+              (r, i) =>
+                `Rule ${i + 1}: ${db.currencySymbol}${r.min.toFixed(2)} – ` +
+                `${db.currencySymbol}${r.max.toFixed(2)} | Markup ${r.markup}%`
+            )
+            .join("<br>");
+
+          const tr = document.createElement("tr");
+          tr.innerHTML = `
+      <td>${pm.id}</td>
+      <td>${pm.name}</td>
+      <td>${rulesHtml}</td>
+      <td class="text-nowrap">
+          <!-- Edit -->
+          <button class="btn btn-outline-primary me-1"
+                  data-bs-toggle="modal"
+                  data-bs-target="#editPriceModelModal"
+                  data-id="${pm.id}">
+            <i class="fas fa-pen"></i> Edit
+          </button>
+
+          <!-- Export -->
+          <button class="btn btn-secondary me-1"
+                  onclick="exportPriceModel(${pm.id})">
+            <i class="fas fa-download"></i> Export Price Model
+          </button>
+
+          <!-- Delete -->
+          <button class="btn btn-outline-danger"
+                  onclick="deletePriceModel(${pm.id})">
+            <i class="fas fa-trash-alt"></i> Delete
+          </button>
+        </td>`;
+          tbody.appendChild(tr);
+        });
       }
 
-      // save & re-render
-      generalPresets[idx].value = newValue;
-      localStorage.setItem("generalPresets", JSON.stringify(generalPresets));
-      renderGeneralPresetsTable();
-    }
+      /**
+       * Render the <tbody> inside the “Hourly Labor Rates” tab.
+       * Requires an element with id="labor-rate-table".
+       */
+      function renderLaborRateTable() {
+        const tbody = document.getElementById("labor-rate-table");
+        tbody.innerHTML = ""; // wipe
+        db.hourlyLaborRates.forEach((rate) => {
+          const tr = document.createElement("tr");
+          tr.innerHTML = `
+            <td>${rate.id}</td>
+            <td>${rate.name}</td>
+            <td>${db.currencySymbol}${parseFloat(rate.rate).toFixed(2)}</td>
+            <td>
+              <button class="btn btn-primary" onclick="editLaborRate(${rate.id})"><i class="fas fa-pen"></i> Edit</button>
+              <button class="btn btn-outline-danger" onclick="deleteLaborRate(${rate.id})"><i class="fas fa-trash-alt"></i> Delete</button>
+            </td>`;
+          tbody.appendChild(tr);
+        });
+      }
+      /* call them on boot */
+      renderPriceModelTable();
+      renderLaborRateTable();
+    </script>
 
-    // --------------------------------------------------------------------
-    // BOOTSTRAP the table once DOM is ready
-    // --------------------------------------------------------------------
-    document.addEventListener("DOMContentLoaded", () => {
-      renderGeneralPresetsTable();
-    });
-  </script>
+    <!-- CRUD Callbacks -->
+    <script>
+      function refreshGlobals() {
+        // keep legacy globals in sync after any CRUD op
+        window.priceModels = db.priceModels;
+        window.hourlyLaborRates = db.hourlyLaborRates;
+        renderPriceModelTable();
+        renderLaborRateTable();
+        renderMagicBox();
+        renderLaborRateRadios();
+        addDuplicateButtons();
+      }
+      /* ---------- PRICE MODELS ---------- */
+      function editPriceModel(id) {
+        const model = db.priceModels.find((m) => m.id === id);
+        if (!model) return alert("Model not found");
+        const newName = prompt("Price-model name:", model.name);
+        if (newName === null) return; // cancelled
+        const newRules = prompt("Rules JSON (array).  Leave as-is if unsure.", JSON.stringify(model.rules, null, 2));
+        if (newRules === null) return; // cancelled
+        try {
+          const parsed = JSON.parse(newRules);
+          if (!Array.isArray(parsed)) throw "Rules must be an array";
+          model.name = newName.trim() || model.name;
+          model.rules = parsed;
+          saveData(db);
+          refreshGlobals();
+        } catch (err) {
+          alert("Invalid JSON for rules.\n" + err);
+        }
+      }
+      // delete price model
+      function deletePriceModel(id) {
+        if (!confirm("Delete price model ID# " + id + "?")) return;
+        db.priceModels = db.priceModels.filter((m) => m.id !== id);
+        saveData(db);
+        showToast(`Deleted price model.`, "danger");
+        refreshGlobals();
+      }
+      // grab modal elements once
+      const ehrModalEl = document.getElementById("editHourlyRateModal");
+      const ehrId = document.getElementById("ehr_id");
+      const ehrName = document.getElementById("ehr_name");
+      const ehrValue = document.getElementById("ehr_value");
+      const ehrError = document.getElementById("ehr_error");
+      const ehrSave = document.getElementById("ehr_save");
+      // edit labor rate
+      function editLaborRate(id) {
+        const rate = db.hourlyLaborRates.find((r) => r.id === id);
+        if (!rate) {
+          showToast("Hourly labor rate not found.", "danger");
+          return;
+        }
+        // populate
+        ehrId.value = rate.id;
+        ehrName.value = rate.name;
+        ehrValue.value = parseFloat(rate.rate).toFixed(2);
+        ehrError.classList.add("d-none");
+        // show modal
+        new bootstrap.Modal(ehrModalEl).show();
+      }
+      // save handler
+      ehrSave.addEventListener("click", () => {
+        const id = parseInt(ehrId.value, 10);
+        const name = ehrName.value.trim();
+        const value = parseFloat(ehrValue.value);
+        // validation
+        if (!name) {
+          ehrError.textContent = "Rate name is required.";
+          ehrError.classList.remove("d-none");
+          return;
+        }
+        if (isNaN(value) || value <= 0) {
+          ehrError.textContent = "Please enter a positive number for the rate.";
+          ehrError.classList.remove("d-none");
+          return;
+        }
+        // persist & refresh
+        const rate = db.hourlyLaborRates.find((r) => r.id === id);
+        rate.name = name;
+        rate.rate = value;
+        saveData(db);
+        refreshGlobals();
+        showToast(`Updated “${name}” to ${db.currencySymbol}${value.toFixed(2)}/hour.`, "info");
+        // hide the modal
+        bootstrap.Modal.getInstance(ehrModalEl).hide();
+      });
+      // delete labor rate
+      function deleteLaborRate(id) {
+        if (!confirm("Delete labor rate #" + id + "?")) return;
+        const victim = db.hourlyLaborRates.find((r) => r.id === id);
+        db.hourlyLaborRates = db.hourlyLaborRates.filter((r) => r.id !== id);
+        saveData(db);
+        refreshGlobals();
+        showToast(`Deleted labor rate “${victim?.name ?? id}”.`, "danger");
+      }
+    </script>
+
+    <!-- Load price model logic -->
+    <script>
+      function loadPriceModel(id) {
+        const m = db.priceModels.find((pm) => pm.id == id);
+        if (!m) {
+          window.pricingRules = [];
+          document.getElementById("priceModelLabel").textContent = "";
+          return;
+        }
+        window.pricingRules = m.rules;
+        document.getElementById("priceModelLabel").textContent = `(${m.name})`;
+        calculatePrice(); // re-run price math
+      }
+    </script>
+
+    <!--  Magic box dynamic renderer -->
+    <script>
+      /**
+       * Build / rebuild the entire Magic-Box UI.
+       * If no price-models exist it hides the controls wrapper,
+       * shows the unicorn overlay, and disables inputs.
+       */
+      function renderMagicBox() {
+        const controls = document.getElementById("magicBoxControls");
+        const radiosWrap = document.getElementById("magicBoxRadios");
+        const emptyPane = document.getElementById("magicBoxEmpty");
+        const costInput = document.getElementById("costInput");
+        const copyBtn = document.getElementById("copyMagicBoxRetailPrice");
+
+        radiosWrap.innerHTML = ""; // clear old radios
+        emptyPane.innerHTML = ""; // clear old overlay
+
+        /* --------------- NO PRICE-MODELS ---------------- */
+        if (!db.priceModels.length) {
+          // hide / lock normal controls
+          controls.classList.add("d-none");
+          costInput.disabled = true;
+          copyBtn.classList.add("disabled");
+          window.pricingRules = [];
+          calculatePrice(); // clears retailPriceOutput
+
+          // pretty overlay
+          emptyPane.innerHTML = `
+          <div class="text-center p-4 rounded shadow" style="background:linear-gradient(135deg,#ff9a9e 0%,#fad0c4 100%);color:#fff;font-weight:600;">
+            <h2>No price models found.</h2><br>
+            <small class="d-block mt-1">
+              Open <em>Manage&nbsp;Presets</em> → <em>Price&nbsp;Models</em> and click
+              <span class="badge bg-success">Create&nbsp;New&nbsp;Price&nbsp;Model</span>.<br>
+              Save it, then come back – the Magic&nbsp;Box will unlock automatically.
+            </small>
+          </div>`;
+          return;
+        }
+
+        /* --------------- WE HAVE PRICE-MODELS ------------ */
+        controls.classList.remove("d-none");
+        costInput.disabled = false;
+        copyBtn.classList.remove("disabled");
+
+        db.priceModels.forEach((pm, i) => {
+          const d = document.createElement("div");
+          d.className = "form-check  mb-2";
+          d.innerHTML = `
+            <input class="form-check-input price-model-radio"
+                   type="radio" name="priceModel"
+                   id="pm_${pm.id}" value="${pm.id}" ${i === 0 ? "checked" : ""}>
+            <label class="form-check-label" for="pm_${pm.id}">
+              <i class="fas fa-magic text-primary"></i> ${pm.name}
+            </label>`;
+          radiosWrap.appendChild(d);
+        });
+
+        // hook change events
+        radiosWrap
+          .querySelectorAll(".price-model-radio")
+          .forEach((r) => r.addEventListener("change", () => loadPriceModel(r.value)));
+
+        // prime rules with the first model
+        loadPriceModel(radiosWrap.querySelector(".price-model-radio:checked").value);
+      }
+    </script>
+
+    <!-- Labor charge conversion logic-->
+    <script>
+      // Labor-Charge Conversion & dynamic helper text
+      const formulaEl = document.getElementById("serviceTimeFormula");
+      function updateServiceTime() {
+        const laborCharge = parseFloat(document.getElementById("laborChargeInput").value);
+        const selRateEl = document.querySelector(".labor-rate-radio:checked");
+        const selectedRate = selRateEl ? parseFloat(selRateEl.value) : NaN;
+        const outputEl = document.getElementById("serviceTimeOutput");
+
+        if (!isNaN(laborCharge) && !isNaN(selectedRate) && selectedRate > 0) {
+          const hrs = laborCharge / selectedRate;
+          outputEl.value = hrs.toFixed(4);
+          formulaEl.textContent = `Calculated as: ${laborCharge.toFixed(2)} ÷ ${selectedRate.toFixed(2)}`;
+        } else {
+          outputEl.value = "";
+          formulaEl.textContent = "";
+        }
+      }
+    </script>
+
+    <!--  Hourly labor rate dynamic renderer -->
+    <script>
+      function renderLaborRateRadios() {
+        const box = document.getElementById("laborRateBox");
+        const wrap = document.getElementById("laborRateRadios");
+        const controls = document.getElementById("laborChargeControls");
+        const emptyPane = document.getElementById("laborChargeEmpty");
+        const laborInput = document.getElementById("laborChargeInput");
+        const copyBtn = document.getElementById("copyServiceTime");
+
+        wrap.innerHTML = ""; // wipe previous render
+
+        /* ---------- empty-state: overlay ---------- */
+        if (!db.hourlyLaborRates.length) {
+          wrap.innerHTML = `
+          <div class="unicorn-overlay text-center p-4 rounded shadow"
+               style="background:linear-gradient(135deg,#a18cd1 0%,#fbc2eb 100%);
+                      color:#fff;font-weight:600;">
+            <h2>No hourly rates found.</h2><br>
+            <small class="d-block mt-1">
+              Open <em>Manage&nbsp;Presets</em> → <em>Hourly&nbsp;Labor&nbsp;Rates</em>,
+              click <span class="badge bg-success">Create&nbsp;New&nbsp;Hourly&nbsp;Labor&nbsp;Rate</span>,
+              save it, then come back - this panel will unlock automatically.
+            </small>
+          </div>`;
+
+          // disable dependent UI
+          laborInput.disabled = true;
+          copyBtn.classList.add("disabled");
+          window.selectedLaborRate = { id: null, rate: NaN };
+          updateServiceTime(); // clears the output
+          calculateTotals(); // zero-out labor calculations
+          return;
+        }
+
+        /* ---------- we have rates: build radios ---------- */
+        db.hourlyLaborRates.forEach((r, i) => {
+          const d = document.createElement("div");
+          d.className = "form-check mb-2";
+          d.innerHTML = `
+      <input class="form-check-input labor-rate-radio"
+             type="radio" name="hourlyLaborRate"
+             id="lr_${r.id}"
+             data-id="${r.id}"
+             value="${r.rate}"
+             ${i === 0 ? "checked" : ""}>
+      <label class="form-check-label" for="lr_${r.id}">
+        ${r.name} - ${db.currencySymbol}${parseFloat(r.rate).toFixed(2)}
+      </label>`;
+          wrap.appendChild(d);
+        });
+
+        // re-enable UI
+        laborInput.disabled = false;
+        copyBtn.classList.remove("disabled");
+
+        /* ---------- behaviour on change ---------- */
+        wrap.querySelectorAll(".labor-rate-radio").forEach((radio) =>
+          radio.addEventListener("change", function () {
+            window.selectedLaborRate = {
+              id: this.dataset.id,
+              rate: parseFloat(this.value)
+            };
+            calculateTotals();
+            updateServiceTime();
+          })
+        );
+
+        /* ---------- prime globals with the first rate ---------- */
+        const first = wrap.querySelector(".labor-rate-radio:checked");
+        if (first) {
+          window.selectedLaborRate = { id: first.dataset.id, rate: parseFloat(first.value) };
+          updateServiceTime();
+          calculateTotals();
+        }
+      }
+    </script>
+
+    <!-- Bootstrap-modal edit price-model workflow -->
+    <script>
+      const pmModalEl = document.getElementById("editPriceModelModal");
+      const pmName = document.getElementById("pm_name");
+      const pmIdField = document.getElementById("pm_id");
+      const pmRulesWrap = document.getElementById("pm_rules");
+      const pmAddRuleBtn = document.getElementById("pm_add_rule");
+      const pmSaveBtn = document.getElementById("pm_save");
+      let currentModel = null; // object reference while editing
+
+      /* ---------- helpers ---------- */
+      function ruleRow(rule = { min: 0, max: 0, markup: 0, base_fee: 0, markup_type: "percentage" }) {
+        return `
+        <div class="row g-2 align-items-end rule">
+          <div class="col-2"><label class="form-label">Min</label>
+            <input type="number" step="0.01" class="form-control min" value="${rule.min}">
+          </div>
+          <div class="col-2"><label class="form-label">Max</label>
+            <input type="number" step="0.01" class="form-control max" value="${rule.max}">
+          </div>
+          <div class="col-2"><label class="form-label">Markup %</label>
+            <input type="number" step="0.01" class="form-control markup" value="${rule.markup}">
+          </div>
+          <div class="col-2"><label class="form-label">Base fee</label>
+            <input type="number" step="0.01" class="form-control base_fee" value="${rule.base_fee}">
+          </div>
+          <div class="col-3"><label class="form-label">Type</label>
+            <select class="form-select markup_type">
+              <option value="percentage" ${rule.markup_type === "percentage" ? "selected" : ""}>Percentage</option>
+              <option value="fixed"      ${rule.markup_type === "fixed" ? "selected" : ""}>Fixed</option>
+            </select>
+          </div>
+          <div class="col-1">
+            <button class="btn btn-outline-danger w-100 pm_del_rule"><i class="fas fa-trash-alt"></i></button>
+          </div>
+        </div>`;
+      }
+
+      function renderRules(rules) {
+        pmRulesWrap.innerHTML = rules.map((r) => ruleRow(r)).join("");
+      }
+
+      // open modal & populate
+      pmModalEl.addEventListener("show.bs.modal", (e) => {
+        const btn = e.relatedTarget;
+        const id = +btn.dataset.id;
+        currentModel = db.priceModels.find((m) => m.id === id);
+        if (!currentModel) return;
+
+        pmIdField.value = id;
+        pmName.value = currentModel.name;
+        renderRules(currentModel.rules);
+      });
+      // add / remove rule rows
+      pmAddRuleBtn.onclick = () => {
+        pmRulesWrap.insertAdjacentHTML("beforeend", ruleRow());
+      };
+      pmRulesWrap.addEventListener("click", (e) => {
+        if (e.target.closest(".pm_del_rule")) {
+          e.target.closest(".rule").remove();
+        }
+      });
+
+      // save
+      pmSaveBtn.onclick = () => {
+        // gather rows → array
+        const rows = [...pmRulesWrap.querySelectorAll(".rule")];
+        const rules = rows.map((r) => ({
+          min: +r.querySelector(".min").value,
+          max: +r.querySelector(".max").value,
+          markup: +r.querySelector(".markup").value,
+          base_fee: +r.querySelector(".base_fee").value,
+          markup_type: r.querySelector(".markup_type").value
+        }));
+        // basic validation
+        if (!pmName.value.trim()) return alert("Name required");
+        if (!rules.length) return alert("Need at least one rule");
+        if (rules.some((r) => isNaN(r.min) || isNaN(r.max) || isNaN(r.markup))) {
+          return alert("Numbers required for min / max / markup");
+        }
+        // update object + persist
+        currentModel.name = pmName.value.trim();
+        currentModel.rules = rules;
+        saveData(db);
+        showToast(
+          `Price model “${currentModel.name}” saved successfully. Don't forget to export an updated copy!`,
+          "success"
+        );
+        refreshGlobals();
+        bootstrap.Modal.getInstance(pmModalEl).hide();
+      };
+    </script>
+
+    <!-- Import Price Model Logic-->
+    <script>
+      (() => {
+        const importModal = document.getElementById("importPriceModelModal");
+        const txt = document.getElementById("pm_import_json");
+        const err = document.getElementById("pm_import_error");
+        const importBtn = document.getElementById("pm_import_btn");
+        // clear textarea every time the modal opens
+        importModal.addEventListener("show.bs.modal", () => {
+          txt.value = "";
+          err.classList.add("d-none");
+        });
+        importBtn.addEventListener("click", () => {
+          err.classList.add("d-none");
+          let payload;
+          try {
+            payload = JSON.parse(txt.value.trim());
+          } catch {
+            err.textContent = "Invalid JSON - please check your input.";
+            err.classList.remove("d-none");
+            return;
+          }
+          // very light validation
+          if (!payload?.name || !Array.isArray(payload?.rules) || !payload.rules.length) {
+            err.textContent = "JSON must contain a name and at least one rule.";
+            err.classList.remove("d-none");
+            return;
+          }
+          const newId = Math.max(0, ...db.priceModels.map((m) => m.id)) + 1;
+          db.priceModels.push({ id: newId, ...payload });
+          saveData(db);
+          refreshGlobals(); // redraw radios, tables, etc.
+          bootstrap.Modal.getInstance(importModal).hide();
+          showToast(`Imported price model “${payload.name}” with ${payload.rules.length} rule(s).`, "Cam");
+        });
+      })();
+    </script>
+
+    <!-- Export Price Model Logic -->
+    <script>
+      function exportPriceModel(id) {
+        const pm = db.priceModels.find((p) => p.id === id);
+        if (!pm) {
+          showToast("Price model not found!", "danger");
+          return;
+        }
+        // stringify w/ two-space indent so it’s readable
+        const json = JSON.stringify(pm, null, 2);
+        // build a Blob & temp link
+        const blob = new Blob([json], { type: "text/plain;charset=utf-8" });
+        const url = URL.createObjectURL(blob);
+        // slugified filename: “My_Model.txt”
+        const fileName = pm.name.trim().replace(/\s+/g, "_") + ".txt";
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = fileName;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        showToast(
+          `Generated price model "${pm.name}" as ${fileName}. Please allow downloads in your web browser to receive it.`,
+          "info"
+        );
+      }
+    </script>
+
+    <!-- Create / Duplicate Price-Model (local) -->
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        // constants / DOM references
+        const CURRENCY = db.currencySymbol;
+        const modal = document.getElementById("createPriceModelModal");
+        const nameInput = document.getElementById("cpm_name");
+        const rulesWrap = document.getElementById("cpm_rules");
+        const addRuleBtn = document.getElementById("cpm_add_rule");
+        const saveBtn = document.getElementById("cpm_save");
+        const errorBox = document.getElementById("cpm_error");
+        const modeField = document.getElementById("cpm_mode");
+        const dupIdField = document.getElementById("cpm_dup_id");
+
+        // rules row
+        const ruleHTML = (i, r = { min: "", max: "", markup: "", base_fee: "", markup_type: "percentage" }) => `
+        <div class="mb-3 price-model-rule" data-index="${i}">
+          <label class="form-label fw-bold">Rule ${i + 1}</label>
+          <div class="input-group mb-2">
+            <span  class="input-group-text">Min (${CURRENCY})</span>
+            <input  type="number" step="0.01" class="form-control min-input" value="${r.min}">
+            <span  class="input-group-text">Max (${CURRENCY})</span>
+            <input  type="number" step="0.01" class="form-control max-input" value="${r.max}">
+            <span  class="input-group-text">Markup (%)</span>
+            <input  type="number" step="0.01" class="form-control markup-input" value="${r.markup}">
+            <select class="form-select markup-type-input">
+              <option value="percentage" ${r.markup_type === "percentage" ? "selected" : ""}>Percentage</option>
+              <option value="fixed"      ${r.markup_type === "fixed" ? "selected" : ""}>Fixed</option>
+            </select>
+            <span  class="input-group-text base-fee-symbol">${r.markup_type === "percentage" ? "%" : CURRENCY}</span>
+            <input  type="number" step="0.01" class="form-control base-fee-input" value="${r.base_fee}">
+            <button class="btn btn-outline-danger btn-remove-rule"><i class="fas fa-trash-alt"></i></button>
+          </div>
+          <div class="feedback-container">
+            <div class="invalid-feedback min-error"></div>
+            <div class="invalid-feedback max-error"></div>
+            <div class="invalid-feedback markup-error"></div>
+            <div class="invalid-feedback base-fee-error"></div>
+            <div class="invalid-feedback markup-type-error"></div>
+            <div class="valid-feedback">Looks good!</div>
+          </div>
+        </div>`;
+        // helpers
+        const renumber = () => {
+          [...rulesWrap.children].forEach((row, i) => {
+            row.dataset.index = i;
+            row.querySelector(".form-label").textContent = `Rule ${i + 1}`;
+          });
+        };
+        // validaton with summary
+        function validate() {
+          let ok = true;
+          const summary = [];
+          const rows = [...rulesWrap.querySelectorAll(".price-model-rule")];
+          rows.forEach((row, i) => {
+            const minI = row.querySelector(".min-input"),
+              maxI = row.querySelector(".max-input"),
+              mkI = row.querySelector(".markup-input"),
+              bfI = row.querySelector(".base-fee-input"),
+              tpI = row.querySelector(".markup-type-input");
+            const min = parseFloat(minI.value),
+              max = parseFloat(maxI.value),
+              mk = parseFloat(mkI.value),
+              bf = parseFloat(bfI.value),
+              tp = tpI.value;
+            // reset
+            row
+              .querySelectorAll(".form-control, .form-select")
+              .forEach((el) => el.classList.remove("is-invalid", "is-valid"));
+            row.querySelectorAll(".invalid-feedback").forEach((el) => (el.textContent = ""));
+            row.querySelector(".valid-feedback").style.display = "none";
+            const err = (input, sel, msg) => {
+              input.classList.add("is-invalid");
+              row.querySelector(sel).textContent = msg;
+              summary.push(`Rule ${i + 1} – ${msg}`);
+              ok = false;
+            };
+            if (isNaN(min) || min < 0) err(minI, ".min-error", "Enter a minimum price of 0.00 or higher.");
+            if (isNaN(max) || max <= min) err(maxI, ".max-error", "Maximum price must be greater than the minimum.");
+            if (isNaN(mk) || mk <= 0) err(mkI, ".markup-error", "Markup percentage has to be more than 0.");
+            if (isNaN(bf) || bf < 0) err(bfI, ".base-fee-error", "Base fee can’t be negative.");
+            if (!["percentage", "fixed"].includes(tp))
+              err(tpI, ".markup-type-error", "Choose “Percentage” or “Fixed”.");
+            if (i > 0) {
+              const prevMax = parseFloat(rows[i - 1].querySelector(".max-input").value);
+              if (min <= prevMax) err(minI, ".min-error", "Min must exceed previous rule’s Max");
+            }
+            if (ok) {
+              row.querySelectorAll(".form-control, .form-select").forEach((el) => el.classList.add("is-valid"));
+              row.querySelector(".valid-feedback").style.display = "block";
+            }
+          });
+          /* error summary box */
+          if (ok) {
+            errorBox.classList.add("d-none");
+            errorBox.innerHTML = "";
+          } else {
+            errorBox.classList.remove("d-none");
+            errorBox.innerHTML = `<strong>Please fix the following before saving this price model:</strong><ul class="mb-0">
+        ${summary.map((m) => `<li>${m}</li>`).join("")}
+      </ul>`;
+          }
+          saveBtn.disabled = !ok;
+          return ok;
+        }
+        // rule events
+        addRuleBtn.addEventListener("click", () => {
+          const lastMax = rulesWrap.querySelector(".price-model-rule:last-child .max-input");
+          const newMin = lastMax ? (parseFloat(lastMax.value || 0) + 0.01).toFixed(2) : "0.00";
+          rulesWrap.insertAdjacentHTML("beforeend", ruleHTML(rulesWrap.children.length, { min: newMin }));
+          renumber();
+          validate();
+        });
+        rulesWrap.addEventListener("click", (e) => {
+          if (e.target.closest(".btn-remove-rule")) {
+            e.target.closest(".price-model-rule").remove();
+            renumber();
+            validate();
+          }
+        });
+        rulesWrap.addEventListener("input", (e) => {
+          if (e.target.matches(".min-input,.max-input,.markup-input,.base-fee-input")) validate();
+        });
+        rulesWrap.addEventListener("change", (e) => {
+          if (e.target.classList.contains("markup-type-input")) {
+            e.target.parentElement.querySelector(".base-fee-symbol").textContent =
+              e.target.value === "percentage" ? "%" : CURRENCY;
+            validate();
+          }
+        });
+        // modal show (new/duplicate)
+        modal.addEventListener("show.bs.modal", (ev) => {
+          const src = ev.relatedTarget;
+          const dup = db.priceModels.find((m) => m.id == src?.dataset?.dupId);
+          modeField.value = dup ? "dup" : "new";
+          dupIdField.value = dup ? dup.id : "";
+          nameInput.value = dup ? `Copy of ${dup.name}` : "";
+          rulesWrap.innerHTML = "";
+          const seed = dup ? dup.rules : [{ min: 0, max: 0, markup: 0, base_fee: 0, markup_type: "percentage" }];
+          seed.forEach((r, i) => rulesWrap.insertAdjacentHTML("beforeend", ruleHTML(i, r)));
+          renumber();
+          validate();
+        });
+        // save
+        saveBtn.addEventListener("click", () => {
+          if (!validate()) return;
+          const rules = [...rulesWrap.querySelectorAll(".price-model-rule")].map((r) => ({
+            min: +r.querySelector(".min-input").value,
+            max: +r.querySelector(".max-input").value,
+            markup: +r.querySelector(".markup-input").value,
+            base_fee: +r.querySelector(".base-fee-input").value,
+            markup_type: r.querySelector(".markup-type-input").value
+          }));
+          const newId = Math.max(0, ...db.priceModels.map((m) => m.id)) + 1;
+          db.priceModels.push({ id: newId, name: nameInput.value.trim(), rules });
+          saveData(db);
+          refreshGlobals();
+          showToast(
+            `Price model “${nameInput.value.trim()}” saved successfully. Don't forget to export a copy!`,
+            "success"
+          );
+          bootstrap.Modal.getInstance(modal).hide();
+        });
+      });
+    </script>
+    <!-- add "duplicate" buttons to each price model table row -->
+    <script>
+      function addDuplicateButtons() {
+        // clear any previously-inserted dup buttons
+        document.querySelectorAll(".btn-dup-pm").forEach((b) => b.remove());
+        // walk each row in the price-model table
+        document.querySelectorAll("#price-model-table tr").forEach((tr) => {
+          const id = tr.firstElementChild.textContent;
+          // build the button
+          const dupBtn = document.createElement("button");
+          dupBtn.className = "btn btn-outline-info me-1 btn-dup-pm";
+          dupBtn.innerHTML = `<i class="fas fa-clone"></i> Duplicate`;
+          // wire up the modal attributes
+          dupBtn.dataset.bsToggle = "modal";
+          dupBtn.dataset.bsTarget = "#createPriceModelModal";
+          dupBtn.dataset.dupId = id;
+          // append into the last-cell button group
+          tr.querySelector("td:last-child").appendChild(dupBtn);
+        });
+      }
+      addDuplicateButtons(); // call once at boot
+    </script>
+    <!-- modal for editing general preset resources -->
+    <script>
+      const epModal = document.getElementById("editPresetModal");
+      const epTitle = document.getElementById("ep_title");
+      const epKey = document.getElementById("ep_key");
+      const epFields = document.getElementById("ep_fields");
+      const epError = document.getElementById("ep_error");
+      const epSaveBtn = document.getElementById("ep_save");
+      // helpers
+      function fieldRow(label, innerHTML) {
+        return `<div class="mb-3">
+          <label class="form-label">${label}</label>
+          ${innerHTML}
+        </div>`;
+      }
+      function showErr(msg) {
+        epError.textContent = msg;
+        epError.classList.remove("d-none");
+      }
+      function clearErr() {
+        epError.classList.add("d-none");
+      }
+      // open modal & inject fields
+      epModal.addEventListener("show.bs.modal", (ev) => {
+        const key = ev.relatedTarget.dataset.key;
+        const val = db.presets[key];
+        epKey.value = key;
+        epTitle.textContent = "Edit Preset: " + key.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
+        clearErr();
+        // dynamic field builder
+        switch (key) {
+          case "sales_tax_rate":
+          case "labor_tax_rate":
+            epFields.innerHTML = fieldRow(
+              "% value",
+              `<input type="number" step="0.01" class="form-control" id="ep_val" value="${val}">`
+            );
+            break;
+          case "shop_supplies_charge":
+            epFields.innerHTML =
+              fieldRow(
+                "Percent",
+                `<input type="number" step="0.01" class="form-control" id="ep_percent" value="${val.percent}">`
+              ) +
+              fieldRow(
+                "Flat $",
+                `<input type="number" step="0.01" class="form-control" id="ep_flat" value="${val.dollar_amount}">`
+              );
+            break;
+          case "shipping_charge":
+            epFields.innerHTML = fieldRow(
+              "Flat $",
+              `<input type="number" step="0.01" class="form-control" id="ep_ship" value="${val.value}">`
+            );
+            break;
+          case "contact_information":
+            epFields.innerHTML =
+              fieldRow("Phone", `<input type="text" class="form-control" id="ep_phone" value="${val.phone}">`) +
+              fieldRow("Email", `<input type="email" class="form-control" id="ep_email" value="${val.email}">`) +
+              `<div class="form-check form-switch mb-2">
+                 <input class="form-check-input" type="checkbox" id="ep_inc_phone" ${val.include_phone_in_quote ? "checked" : ""}>
+                 <label class="form-check-label" for="ep_inc_phone">Include phone in quote</label>
+               </div>
+               <div class="form-check form-switch">
+                 <input class="form-check-input" type="checkbox" id="ep_inc_email" ${val.include_email_in_quote ? "checked" : ""}>
+                 <label class="form-check-label" for="ep_inc_email">Include email in quote</label>
+              </div>`;
+            break;
+          default: // simple scalar
+            epFields.innerHTML = fieldRow(
+              "Value",
+              `<input type="text" class="form-control" id="ep_val" value="${val}">`
+            );
+        }
+      });
+      // save
+      epSaveBtn.onclick = () => {
+        clearErr();
+        const key = epKey.value;
+        let newVal;
+        try {
+          switch (key) {
+            case "sales_tax_rate":
+            case "labor_tax_rate":
+              newVal = parseFloat(document.getElementById("ep_val").value);
+              if (isNaN(newVal) || newVal < 0) throw "Enter a positive number.";
+              newVal = newVal.toFixed(2);
+              break;
+            case "shop_supplies_charge":
+              const p = parseFloat(document.getElementById("ep_percent").value);
+              const f = parseFloat(document.getElementById("ep_flat").value);
+              if (isNaN(p) || p < 0 || isNaN(f) || f < 0) throw "Values must be ≥ 0.";
+              newVal = { percent: p.toFixed(2), dollar_amount: f.toFixed(2) };
+              break;
+            case "shipping_charge":
+              const s = parseFloat(document.getElementById("ep_ship").value);
+              if (isNaN(s) || s < 0) throw "Enter a positive number.";
+              newVal = { value: s.toFixed(2) };
+              break;
+            case "contact_information":
+              newVal = {
+                phone: document.getElementById("ep_phone").value.trim(),
+                email: document.getElementById("ep_email").value.trim(),
+                include_phone_in_quote: document.getElementById("ep_inc_phone").checked,
+                include_email_in_quote: document.getElementById("ep_inc_email").checked
+              };
+              break;
+            default:
+              newVal = document.getElementById("ep_val").value.trim();
+          }
+        } catch (msg) {
+          return showErr(msg);
+        }
+        // persist + refresh UI
+        db.presets[key] = newVal; // update in-memory
+        saveData(db); // save to localStorage
+        renderPresetsTable(); // redraw the table rows
+        bootstrap.Modal.getInstance(epModal).hide();
+        //  tailor the success toast
+        const prettyName = key.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toLowerCase());
+        let msg = `Updated “${prettyName}”.`;
+        switch (key) {
+          case "sales_tax_rate":
+          case "labor_tax_rate":
+            msg = `The ${prettyName} is set to ${parseFloat(newVal).toFixed(2)}%.`;
+            break;
+          case "shop_supplies_charge":
+            msg =
+              `The shop supplies charge is set to ${parseFloat(newVal.percent).toFixed(2)}%,` +
+              ` or ${db.currencySymbol}${parseFloat(newVal.dollar_amount).toFixed(2)}. Whichever is greater.`;
+            break;
+          case "shipping_charge":
+            msg = `The default shipping charge set to ${db.currencySymbol}${parseFloat(newVal.value).toFixed(2)}.`;
+            break;
+          case "contact_information":
+            msg = "The contact information has been updated.";
+            break;
+        }
+        showToast(msg, "success");
+      };
+    </script>
+    <!-- modal for creating hourly labor rate resources -->
+    <script>
+      const chrModal = document.getElementById("createHourlyLaborRateModal");
+      const chrName = document.getElementById("chr_name");
+      const chrValue = document.getElementById("chr_value");
+      const chrError = document.getElementById("chr_error");
+      const chrSave = document.getElementById("chr_save");
+      // clear fields each time modal opens
+      chrModal.addEventListener("show.bs.modal", () => {
+        chrName.value = "";
+        chrValue.value = "";
+        chrError.classList.add("d-none");
+      });
+
+      // save handler
+      chrSave.onclick = () => {
+        chrError.classList.add("d-none");
+        const name = chrName.value.trim();
+        const rate = parseFloat(chrValue.value);
+        if (!name) {
+          chrError.textContent = "A rate name is required.";
+          chrError.classList.remove("d-none");
+          return;
+        }
+        if (isNaN(rate) || rate <= 0) {
+          chrError.textContent = "The rate cannot be negative or zero.";
+          chrError.classList.remove("d-none");
+          return;
+        }
+        // assign next id
+        const newId = Math.max(0, ...db.hourlyLaborRates.map((r) => r.id)) + 1;
+        db.hourlyLaborRates.push({ id: newId, name, rate: rate.toFixed(2) });
+        saveData(db);
+        refreshGlobals();
+        showToast(`Saved new labor rate: “${name}” at ${db.currencySymbol}${rate.toFixed(2)}/hour.`);
+        bootstrap.Modal.getInstance(chrModal).hide();
+      };
+    </script>
+    <!-- quote builder core logic -->
+    <script>
+      window.selectedLaborRate = { id: db.hourlyLaborRates[0].id, rate: db.hourlyLaborRates[0].rate };
+      function addNewLine(lineItemData = {}) {
+        const idx = $$("#plSection .line-item").length + 1;
+        const html = `
+          <div class="card line-item mb-3 shadow-sm" data-index="${idx}">
+            <!--  header row  -->
+            <div class="card-header py-1 bg-light">
+              <div class="d-flex align-items-center gap-3">
+                <!-- sort handle -->
+                <span class="drag-handle text-success" style="cursor:move;font-size:1.3rem;">
+                  <i class="fas fa-arrows-alt-v"></i> Sort
+                </span>
+                <!-- required -->
+                <div class="form-check form-switch mb-0">
+                  <input class="form-check-input required-checkbox"
+                         type="checkbox"
+                         id="requiredCheckbox${idx}"
+                         ${lineItemData.required ? "checked" : ""}>
+                  <label class="form-check-label small" for="requiredCheckbox${idx}">Add to Rerquired Quote</label>
+                </div>
+                <!-- actions -->
+                <div class="ms-auto">
+                  <button class="btn btn-sm btn-outline-secondary duplicate-btn me-1">
+                    <i class="fas fa-copy"></i> Duplicate
+                  </button>
+                  <button class="btn btn-sm btn-outline-danger delete-btn">
+                    <i class="fas fa-trash-alt"></i> Delete
+                  </button>
+                </div>
+              </div>
+            </div>
+            <!-- inputs row  -->
+            <div class="card-body pt-3">
+              <div class="row align-items-start justify-content-between">
+                <!-- description -->
+                <div class="col-md-4">
+                  <label class="form-label" for="description${idx}">Description</label>
+                  <div class="input-group">
+                    <span class="input-group-text bg-success text-white"><i class="fas fa-quote-right"></i></span>
+                    <input type="text"
+                      class="form-control description"
+                      id="description${idx}"
+                      value="${lineItemData.description || ""}">
+                  </div>
+                  <small class="text-muted">Write a brief description.</small>
+                </div>
+                <!-- part price -->
+                <div class="col-md-3">
+                  <label class="form-label" for="partPrice${idx}">Part Price</label>
+                  <div class="input-group">
+                    <span class="input-group-text bg-success text-white"><i class="fas fa-dollar-sign"></i></span>
+                    <input type="number"
+                           class="form-control part-price"
+                           step="0.01"
+                           id="partPrice${idx}"
+                           value="${lineItemData.partPrice || ""}"
+                           inputmode="numeric">
+                  </div>
+                  <small class="text-muted">Enter the retail price.</small>
+                </div>
+                <!-- labor hours -->
+                <div class="col-md-3">
+                  <label class="form-label" for="laborHours${idx}">Labor Hours (decmal)</label>
+                  <div class="input-group">
+                    <span class="input-group-text bg-success text-white"><i class="fas fa-clock"></i></span>
+                    <input type="number"
+                           class="form-control labor-hours"
+                           step="0.0001"
+                           id="laborHours${idx}"
+                           value="${lineItemData.laborHours || ""}"
+                           inputmode="numeric">
+                  </div>
+                  <small class="text-muted">Enter the amout of labor to charge.</small>
+                </div>
+                <!-- labor price (auto-generated) -->
+                <div class="col-md-2">
+                  <label class="form-label" for="laborPrice${idx}">Labor Price</label>
+                  <div class="input-group">
+                    <span class="input-group-text bg-secondary text-white"><i class="fas fa-dollar-sign"></i></span>
+                    <input type="text"
+                           class="form-control labor-price"
+                           disabled
+                           id="laborPrice${idx}"
+                           value="${lineItemData.laborPrice || ""}">
+                  </div>
+                  <small class="text-muted">(Auto-generated)</small>
+                </div>
+              </div>
+            </div>
+          </div>`;
+        $("#plSection").insertAdjacentHTML("beforeend", html);
+        updatePlaceholder();
+        attachLineEvents();
+      }
+      function updatePlaceholder() {
+        $("#placeholder").style.display = $$("#plSection .line-item").length ? "none" : "block";
+      }
+    </script>
+    <!-- calculate totals logic -->
+    <script>
+      function calculateTotals() {
+        let partsTotal = 0,
+          laborTotal = 0;
+        $$("#plSection .line-item").forEach((li) => {
+          const part = parseFloat(li.querySelector(".part-price").value) || 0;
+          const hrs = parseFloat(li.querySelector(".labor-hours").value) || 0;
+          const laborPrice = hrs * window.selectedLaborRate.rate;
+          li.querySelector(".labor-price").value = laborPrice.toFixed(2);
+          partsTotal += part;
+          laborTotal += laborPrice;
+        });
+        const partsTax = partsTotal * (parseFloat(db.presets.sales_tax_rate) / 100);
+        const laborTax = laborTotal * (parseFloat(db.presets.labor_tax_rate) / 100);
+        let taxTotal = partsTax + laborTax;
+        let shipping = parseFloat($("#shippingEstimate").value) || 0;
+        let currentBill = parseFloat($("#currentBill").value) || 0;
+        // shop supplies
+        let shop = 0;
+        if ($("#includeShopSupplies").checked) {
+          const percent = parseFloat(db.presets.shop_supplies_charge.percent);
+          const flat = parseFloat(db.presets.shop_supplies_charge.dollar_amount);
+          const calc = (partsTotal + laborTotal) * (percent / 100);
+          shop = Math.max(calc, flat);
+        }
+        const total = partsTotal + laborTotal + taxTotal + shipping + currentBill + shop;
+        $("#partsSubtotal").value = partsTotal.toFixed(2);
+        $("#laborSubtotal").value = laborTotal.toFixed(2);
+        $("#taxSubtotal").value = taxTotal.toFixed(2);
+        $("#totalEstimate").value = total.toFixed(2);
+        // update labels
+        $("#shopSuppliesRateLabel").textContent = parseFloat(db.presets.shop_supplies_charge.percent).toFixed(2);
+        $("#shopSuppliesDollarLabel").textContent = parseFloat(db.presets.shop_supplies_charge.dollar_amount).toFixed(
+          2
+        );
+      }
+    </script>
+
+    <!-- event bindings and initial bootstrap logic -->
+    <script>
+      /* ───────────────────────────────────────────────────────────
+       *  Validation helpers
+       * ─────────────────────────────────────────────────────────── */
+      function mark(el, ok) {
+        el.classList.toggle("is-valid", ok);
+        el.classList.toggle("is-invalid", !ok);
+      }
+
+      /** Validate a single line-item card */
+      function validateLine(li) {
+        /* description: must have text */
+        const desc = li.querySelector(".description");
+        const descOK = !!desc.value.trim();
+        mark(desc, descOK);
+
+        /* part price: positive number */
+        const part = li.querySelector(".part-price");
+        const pVal = parseFloat(part.value);
+        const partOK = !isNaN(pVal) && pVal >= 0;
+        mark(part, partOK);
+
+        /* labor hours: positive number (can be 0) */
+        const hours = li.querySelector(".labor-hours");
+        const hVal = parseFloat(hours.value);
+        const hoursOK = !isNaN(hVal) && hVal >= 0;
+        mark(hours, hoursOK);
+
+        /* return overall boolean in case you need it later */
+        return descOK && partOK && hoursOK;
+      }
+
+      /* ───────────────────────────────────────────────────────────
+       *  Main binding – replaces the old attachLineEvents()
+       * ─────────────────────────────────────────────────────────── */
+      function attachLineEvents() {
+        $$("#plSection .line-item").forEach((li) => {
+          /* DELETE ------------------------------------------------ */
+          li.querySelector(".delete-btn").onclick = () => {
+            li.remove();
+            updatePlaceholder();
+            calculateTotals();
+            showToast(`Deleted line #${li.dataset.index}.`, "danger");
+          };
+
+          /* DUPLICATE -------------------------------------------- */
+          li.querySelector(".duplicate-btn").onclick = () => {
+            const d = li.querySelector(".description").value;
+            const cloneData = {
+              required: li.querySelector(".required-checkbox").checked,
+              description: d.startsWith("COPY OF ") ? d : `COPY OF ${d}`,
+              partPrice: li.querySelector(".part-price").value,
+              laborPrice: li.querySelector(".labor-price").value,
+              laborHours: li.querySelector(".labor-hours").value
+            };
+            addNewLine(cloneData);
+            calculateTotals();
+            showToast(`Duplicated line #${li.dataset.index}.`, "info");
+          };
+
+          /* VALIDATE + RECALC on every change -------------------- */
+          ["input", "change", "blur"].forEach((ev) => {
+            li.addEventListener(ev, (e) => {
+              /* only run when the event originated from an editable field */
+              if (e.target.matches(".description, .part-price, .labor-hours")) {
+                validateLine(li);
+                calculateTotals(); // keep math fresh
+              }
+            });
+          });
+
+          /* run once on insert so brand-new rows are evaluated */
+          validateLine(li);
+        });
+      }
+      // add line items button
+      $("#addNewLineBtn").addEventListener("click", () => {
+        const raw = $("#addNewLineQty").value.trim();
+        const qty = parseInt(raw, 10); // how many lines the user wants total
+        const cur = $$("#plSection .line-item").length; // how many lines are already on screen
+        // edge-case checks
+        if (raw === "" || isNaN(qty)) {
+          showToast("Please enter how many line items you want in total.", "warning");
+          return;
+        }
+        if (qty <= 0) {
+          showToast("The quantity must be a positive whole number.", "warning");
+          return;
+        }
+        if (qty === cur) {
+          showToast(`You already have ${qty} line item${qty === 1 ? "" : "s"}.`, "warning");
+          return;
+        }
+        if (qty < cur) {
+          showToast(
+            `There are already ${cur} line item${cur === 1 ? "" : "s"}. ` + `Enter ${cur + 1} or greater to add more.`,
+            "warning"
+          );
+          return;
+        }
+        // add the difference
+        const toAdd = qty - cur; // how many *new* rows we need
+        for (let i = 0; i < toAdd; i++) addNewLine();
+        calculateTotals();
+        showToast(`Added ${toAdd} line item${toAdd === 1 ? "" : "s"}.`, "success");
+      });
+
+      // generate Quotes (trimmed – only header/totals)
+      $("#generateQuoteBtn").addEventListener("click", () => {
+        calculateTotals();
+        // for brevity we just dump summary lines
+        $("#recommendedQuote").value = `Total Estimate: ${db.currencySymbol}${$("#totalEstimate").value}`;
+        $("#requiredQuote").value = `Total Estimate: ${db.currencySymbol}${$("#totalEstimate").value}`;
+      });
+      // clear Quote
+      $("#clearQuoteBtn").addEventListener("click", () => {
+        if (confirm("Are you sure you want to start over? This action cannot be undone.")) location.reload();
+      });
+      // shipping / bill changes
+      ["#shippingEstimate", "#currentBill", "#includeShopSupplies"].forEach((sel) =>
+        $(sel).addEventListener("input", calculateTotals)
+      );
+      // quote mode toggle
+      $$('input[name="quoteMode"]').forEach((r) =>
+        r.addEventListener("change", () => {
+          if ($("#plainTextQuotes").checked) {
+            $("#builder").style.display = "block";
+          } else {
+            $("#builder").style.display = "none";
+          }
+        })
+      );
+      // drag & drop
+      new Sortable(plSection, { handle: ".drag-handle", animation: 150, onEnd: calculateTotals });
+      // initial bootstrap
+      renderPresetsTable();
+      updatePlaceholder();
+      calculateTotals();
+    </script>
+    <!-- script for generating quotes -->
+    <script>
+      // generate quotes - full-length, vanilla JS version
+      function generateQuotes() {
+        calculateTotals(); // make sure numbers are fresh
+        const recommendedQuote = ["------ Recommended Quote ------"];
+        const requiredQuote = ["------ Required Quote ------"];
+        // grab high-level inputs
+        const shippingEstimate = parseFloat($("#shippingEstimate").value) || 0;
+        const currentBill = parseFloat($("#currentBill").value) || 0;
+        const currentBillNotes = $("#currentBillNotes").value.trim();
+        const noteText = currentBillNotes ? ` - Note: "${currentBillNotes}"` : "";
+        const includeShipping = $("#includeShipping").checked;
+        //  accumulators
+        let reqParts = 0,
+          reqLabor = 0;
+        let recParts = 0,
+          recLabor = 0;
+        // walk every line-item row
+        $$("#plSection .line-item").forEach((li) => {
+          const required = li.querySelector(".required-checkbox").checked;
+          const desc = li.querySelector(".description").value;
+          const part = parseFloat(li.querySelector(".part-price").value) || 0;
+          const labor = parseFloat(li.querySelector(".labor-price").value) || 0;
+          const lineTxt = `${desc}: ${db.currencySymbol}${part.toFixed(2)} - Labor: ${db.currencySymbol}${labor.toFixed(2)}`;
+          recommendedQuote.push(lineTxt);
+          recParts += part;
+          recLabor += labor;
+          if (required) {
+            requiredQuote.push(lineTxt);
+            reqParts += part;
+            reqLabor += labor;
+          }
+        });
+        //  tax & shop-supplies
+        const partsTaxRate = parseFloat(db.presets.sales_tax_rate) / 100;
+        const laborTaxRate = parseFloat(db.presets.labor_tax_rate) / 100;
+        const recTax = recParts * partsTaxRate + recLabor * laborTaxRate;
+        const reqTax = reqParts * partsTaxRate + reqLabor * laborTaxRate;
+        const ss = db.presets.shop_supplies_charge;
+        const ssPct = parseFloat(ss.percent) / 100;
+        const ssFlat = parseFloat(ss.dollar_amount);
+        let recShop = 0,
+          reqShop = 0;
+        if ($("#includeShopSupplies").checked) {
+          recShop = Math.max((recParts + recLabor) * ssPct, ssFlat);
+          reqShop = Math.max((reqParts + reqLabor) * ssPct, ssFlat);
+        }
+        // totals
+        const recTotal = recParts + recLabor + recTax + shippingEstimate + currentBill + recShop;
+        const reqSub = reqParts + reqLabor + reqTax + currentBill + reqShop;
+        const reqTotal = reqSub + (includeShipping ? shippingEstimate : 0);
+        // assemble quote text
+        recommendedQuote.push("------------");
+        requiredQuote.push("------------");
+        recommendedQuote.push(`Current Bill: ${db.currencySymbol}${currentBill.toFixed(2)}${noteText}`);
+        requiredQuote.push(`Current Bill: ${db.currencySymbol}${currentBill.toFixed(2)}${noteText}`);
+        recommendedQuote.push(
+          `Parts Subtotal (${db.presets.sales_tax_rate}%): ${db.currencySymbol}${recParts.toFixed(2)}`
+        );
+        recommendedQuote.push(
+          `Labor Subtotal (${db.presets.labor_tax_rate}%): ${db.currencySymbol}${recLabor.toFixed(2)}`
+        );
+        recommendedQuote.push(`Tax Subtotal: ${db.currencySymbol}${recTax.toFixed(2)}`);
+        recommendedQuote.push(`Shipping Estimate: ${db.currencySymbol}${shippingEstimate.toFixed(2)}`);
+        if (recShop) recommendedQuote.push(`Shop Supplies: ${db.currencySymbol}${recShop.toFixed(2)}`);
+        requiredQuote.push(
+          `Parts Subtotal (${db.presets.sales_tax_rate}%): ${db.currencySymbol}${reqParts.toFixed(2)}`
+        );
+        requiredQuote.push(
+          `Labor Subtotal (${db.presets.labor_tax_rate}%): ${db.currencySymbol}${reqLabor.toFixed(2)}`
+        );
+        requiredQuote.push(`Tax Subtotal: ${db.currencySymbol}${reqTax.toFixed(2)}`);
+        if (includeShipping)
+          requiredQuote.push(`Shipping Estimate: ${db.currencySymbol}${shippingEstimate.toFixed(2)}`);
+        if (reqShop) requiredQuote.push(`Shop Supplies: ${db.currencySymbol}${reqShop.toFixed(2)}`);
+        recommendedQuote.push("------");
+        requiredQuote.push("------");
+        recommendedQuote.push(`Total (ESTIMATE): ${db.currencySymbol}${recTotal.toFixed(2)}`);
+        requiredQuote.push(`Total (ESTIMATE): ${db.currencySymbol}${reqTotal.toFixed(2)}`);
+        // contact info (if flagged)
+        const ci = db.presets.contact_information;
+        if (ci.include_phone_in_quote || ci.include_email_in_quote) {
+          recommendedQuote.push("------");
+          requiredQuote.push("------");
+          if (ci.include_phone_in_quote) {
+            recommendedQuote.push(`Phone: ${ci.phone}`);
+            requiredQuote.push(`Phone: ${ci.phone}`);
+          }
+          if (ci.include_email_in_quote) {
+            recommendedQuote.push(`Email: ${ci.email}`);
+            requiredQuote.push(`Email: ${ci.email}`);
+          }
+        }
+        // dump into textareas
+        $("#recommendedQuote").value = recommendedQuote.join("\n");
+        $("#requiredQuote").value = requiredQuote.join("\n");
+        showToast("Quotes generated successfully – be sure to check your work!");
+      }
+      // hook the button
+      $("#generateQuoteBtn").addEventListener("click", generateQuotes);
+    </script>
+    <!-- magic Box calculation logic -->
+    <script>
+      function calculatePrice() {
+        const costInput = document.getElementById("costInput");
+        const cost = parseFloat(costInput.value);
+        const errorContainer = document.getElementById("costInputError");
+        const successContainer = document.getElementById("costInputSuccess");
+        errorContainer.style.display = "none";
+        successContainer.style.display = "none";
+        if (isNaN(cost) || cost <= 0) {
+          costInput.classList.add("is-invalid");
+          errorContainer.textContent = "The cost must be a positive value.";
+          errorContainer.style.display = "block";
+          document.getElementById("retailPriceOutput").value = "";
+          return;
+        }
+        // walk through the pre-loaded pricingRules
+        let matched = false,
+          retail = 0,
+          formula = "";
+        for (const rule of window.pricingRules) {
+          if (cost >= rule.min && cost <= rule.max) {
+            matched = true;
+            let adjusted = cost;
+            // base fee
+            if (rule.base_fee) {
+              if (rule.markup_type === "percentage") {
+                adjusted += cost * (rule.base_fee / 100);
+              } else {
+                adjusted += rule.base_fee;
+              }
+            }
+            // markup
+            retail = adjusted * (rule.markup / 100);
+            formula = `(${adjusted.toFixed(2)} × ${rule.markup}% = ${retail.toFixed(2)})`;
+            break;
+          }
+        }
+        if (!matched) {
+          costInput.classList.add("is-invalid");
+          errorContainer.textContent = "Cost outside price-model range.";
+          errorContainer.style.display = "block";
+          document.getElementById("retailPriceOutput").value = "";
+          return;
+        }
+        // success
+        costInput.classList.remove("is-invalid");
+        costInput.classList.add("is-valid");
+        successContainer.style.display = "block";
+        // rounding tweak: round down + 0.90 + last digit of the year
+        const yearDigit = new Date().getFullYear() % 10;
+        retail = Math.floor(retail) + 0.9 + yearDigit / 100;
+        document.getElementById("retailPriceOutput").value = retail.toFixed(2);
+      }
+    </script>
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        // bootstrap Magic-Box UI
+        renderMagicBox();
+        renderLaborRateRadios();
+        // copy-to-clipboard helper + bindings logic
+        function copyToClipboard(text) {
+          return new Promise((resolve, reject) => {
+            if (navigator.clipboard) {
+              navigator.clipboard.writeText(text).then(resolve, reject);
+            } else {
+              const ta = document.createElement("textarea");
+              ta.value = text;
+              document.body.appendChild(ta);
+              ta.select();
+              try {
+                document.execCommand("copy");
+                resolve();
+              } catch (e) {
+                reject(e);
+              }
+              document.body.removeChild(ta);
+            }
+          });
+        }
+        const copyBindings = [
+          { btn: "copyRecommendedQuote", src: "recommendedQuote", label: "Recommended quote" },
+          { btn: "copyRequiredQuote", src: "requiredQuote", label: "Required quote" },
+          { btn: "copyServiceTime", src: "serviceTimeOutput", label: "Service time" },
+          { btn: "copyMagicBoxRetailPrice", src: "retailPriceOutput", label: "Retail price" }
+        ];
+        copyBindings.forEach(({ btn, src, label }) => {
+          const el = document.getElementById(btn);
+          el.addEventListener("click", function () {
+            const _btn = this;
+            copyToClipboard(document.getElementById(src).value)
+              .then(() => {
+                // temporarily change icon/text
+                _btn.innerHTML = '<i class="fas fa-clipboard-check"></i> Copied!';
+                // show a toast
+                showToast(`${label} copied to clipboard.`, "success");
+                // revert button after 2s
+                setTimeout(() => {
+                  _btn.innerHTML = '<i class="fas fa-copy"></i> Copy';
+                }, 2000);
+              })
+              .catch(() => {
+                showToast(`Failed to copy ${label}.`, "danger");
+              });
+          });
+        });
+        // hook up live-update event listeners
+        document.getElementById("costInput").addEventListener("input", calculatePrice);
+        // magic-Box
+        document.querySelectorAll(".price-model-radio").forEach((r) => r.addEventListener("change", calculatePrice));
+        // Labor charge input → service-time
+        document.getElementById("laborChargeInput").addEventListener("input", updateServiceTime);
+        // kick everything off once
+        calculatePrice();
+        calculateTotals();
+        updateServiceTime();
+      });
+    </script>
+    <footer class="text-center pb-3">
+      <p>
+        Made with ❤️ by
+        <a href="https://www.instagram.com/imjoshbrown/" target="_blank" rel="noopener"> Josh Brown </a>
+      </p>
+    </footer>
+  </body>
 </html>
-<!-- End Quote Builder -->
